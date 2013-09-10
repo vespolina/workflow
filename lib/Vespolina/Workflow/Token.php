@@ -2,7 +2,7 @@
 
 namespace Vespolina\Workflow;
 
-class Token
+class Token implements TokenInterface
 {
     protected $object;
 

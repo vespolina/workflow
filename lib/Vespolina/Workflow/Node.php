@@ -5,6 +5,14 @@ namespace Vespolina\Workflow;
 class Node implements NodeInterface
 {
     protected $name;
+    protected $tokens;
+
+    public function accept(TokenInterface $token)
+    {
+        $this->tokens[] = $token;
+
+        return true;
+    }
 
     /**
      * Set the name
@@ -26,5 +34,15 @@ class Node implements NodeInterface
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Return the tokens
+     *
+     * @return array of \Vespolina\Workflow\TokenInterface
+     */
+    public function getTokens()
+    {
+        return $this->tokens;
     }
 }

@@ -1,0 +1,4 @@
+suites:
+  workflow:
+    namespace: Vespolina\Workflow
+    src_path: lib

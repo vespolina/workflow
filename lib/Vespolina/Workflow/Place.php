@@ -2,6 +2,6 @@
 
 namespace Vespolina\Workflow;
 
-class Place extends Node implements PlaceInterface
+class Place extends Tokenable implements PlaceInterface
 {
 }

@@ -10,6 +10,6 @@ class TransactionSpec extends ObjectBehavior
     function it_is_initializable()
     {
         $this->shouldHaveType('Vespolina\Workflow\Transaction');
-        $this->shouldReturnAnInstanceOf('Vespolina\Workflow\Node');
+        $this->shouldReturnAnInstanceOf('Vespolina\Workflow\Tokenable');
     }
 }

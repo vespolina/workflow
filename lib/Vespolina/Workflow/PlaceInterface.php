@@ -2,6 +2,6 @@
 
 namespace Vespolina\Workflow;
 
-interface PlaceInterface extends NodeInterface
+interface PlaceInterface extends TokenableInterface
 {
 }

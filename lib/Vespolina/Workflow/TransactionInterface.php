@@ -2,6 +2,6 @@
 
 namespace Vespolina\Workflow;
 
-interface TransactionInterface extends NodeInterface
+interface TransactionInterface extends TokenableInterface
 {
 }

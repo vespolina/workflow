@@ -4,37 +4,36 @@ namespace Vespolina\Workflow;
 
 class Arc extends Node
 {
-    protected $input;
+    protected $from;
+    protected $to;
 
-    protected $output;
-
-    public function setInput(NodeInterface $node)
+    public function setFrom(TokenableInterface $tokenable)
     {
-        if (isset($this->output)) {
-            $expectedInterface = $this->getExpectedInterface($this->output);
-            if (!$node instanceof $expectedInterface) {
-                throw new \InvalidArgumentException("The arc output should be an instance of " . $expectedInterface);
+        if (isset($this->to)) {
+            $expectedInterface = $this->getExpectedInterface($this->to);
+            if (!$tokenable instanceof $expectedInterface) {
+                throw new \InvalidArgumentException('The "from" node should be an instance of ' . $expectedInterface);
             }
         }
-
-        $this->input = $node;
+        $tokenable->addOutput($this);
+        $this->from = $tokenable;
     }
 
-    public function setOutput(NodeInterface $node)
+    public function setTo(TokenableInterface $tokenable)
     {
-        if (isset($this->input)) {
-            $expectedInterface = $this->getExpectedInterface($this->input);
-            if (!$node instanceof $expectedInterface) {
-                throw new \InvalidArgumentException("The arc output should be an instance of " . $expectedInterface);
+        if (isset($this->from)) {
+            $expectedInterface = $this->getExpectedInterface($this->from);
+            if (!$tokenable instanceof $expectedInterface) {
+                throw new \InvalidArgumentException('The "to" node should be an instance of ' . $expectedInterface);
             }
         }
-
-        $this->output = $node;
+        $tokenable->addInput($this);
+        $this->to = $tokenable;
     }
 
-    protected function getExpectedInterface(NodeInterface $node)
+    protected function getExpectedInterface(TokenableInterface $tokenable)
     {
-        if ($node instanceof TransactionInterface) {
+        if ($tokenable instanceof TransactionInterface) {
             return 'Vespolina\Workflow\PlaceInterface';
         }
 

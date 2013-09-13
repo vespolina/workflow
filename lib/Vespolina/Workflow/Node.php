@@ -4,7 +4,9 @@ namespace Vespolina\Workflow;
 
 class Node implements NodeInterface
 {
+    protected $logger;
     protected $name;
+    protected $workflow;
 
     /**
      * Set the name
@@ -26,5 +28,13 @@ class Node implements NodeInterface
     public function getName()
     {
         return $this->name;
+    }
+
+    public function setWorkflow($workflow, $logger)
+    {
+        $this->workflow = $workflow;
+        $this->logger = $logger;
+
+        return $this;
     }
 }

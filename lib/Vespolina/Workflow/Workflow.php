@@ -46,14 +46,20 @@ class Workflow
 
     public function connect(TokenableInterface $from, TokenableInterface $to)
     {
-        if ($from instanceof Place && $to instanceof Place) {
-            new \InvalidArgumentException('You can only connect a Vespolina\Workflow\TransactionInterface to a Vespolina\Workflow\PlaceInterface');
+        if ($from instanceof PlaceInterface && $to instanceof PlaceInterface) {
+            throw new \InvalidArgumentException('You can only connect a Vespolina\Workflow\TransactionInterface to a Vespolina\Workflow\PlaceInterface');
         }
-        if ($from instanceof Transaction && $to instanceof Transaction) {
-            new \InvalidArgumentException('You can only connect a Vespolina\Workflow\PlaceInterface to a Vespolina\Workflow\TransactionInterface');
+        if ($from instanceof TransactionInterface && $to instanceof TransactionInterface) {
+            throw new \InvalidArgumentException('You can only connect a Vespolina\Workflow\PlaceInterface to a Vespolina\Workflow\TransactionInterface');
         }
-        $arc = $this->createArc($from, $to);
+        if (!in_array($from, $this->nodes)) {
+            $this->addNode($from);
+        }
+        if (!in_array($to, $this->nodes)) {
+            $this->addNode($to);
+        }
 
+        return $this->createArc($from, $to);
     }
 
     public function createArc(TokenableInterface $from, TokenableInterface $to)

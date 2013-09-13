@@ -57,8 +57,9 @@ class WorkflowSpec extends ObjectBehavior
         $this->connect($place, $transaction)->shouldReturnAnInstanceOf('Vespolina\Workflow\Arc');
         $this->getNodes()->shouldContainNode($place);
         $this->getNodes()->shouldContainNode($transaction);
-        $this->connect($transaction, $place2)->shouldPassConnectRules($this->getNodes());
-
+        $this->connect($transaction, $place2);
+        $this->getNodes()->shouldContainNodeOnce($transaction);
+        $this->getNodes()->shouldContainNode($place2);
     }
 
     /**
@@ -106,15 +107,19 @@ class WorkflowSpec extends ObjectBehavior
 
                 return false;
             },
+            'containNodeOnce' => function($nodes, $node) {
+                $hits = 0;
+                foreach ($nodes as $curNode) {
+                    if ($curNode == $node) {
+                        $hits++;
+                    }
+                }
+
+                return $hits == 1 ? true : false;
+            },
             'containToken' => function($tokens, $token) {
                 return in_array($token, $tokens);
             },
-            'passConnectRules' => function($arc, $nodes) {
-                $a = 0;
-                if (!in_array($arc, $nodes)) {
-                    return false;
-                }
-            }
         ];
     }
 }

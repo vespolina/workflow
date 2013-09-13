@@ -2,7 +2,7 @@
 
 namespace Vespolina\Workflow;
 
-class Tokenable extends Node implements TokenableInterface
+abstract class Tokenable extends Node implements TokenableInterface
 {
     protected $inputs;
     protected $outputs;
@@ -16,9 +16,20 @@ class Tokenable extends Node implements TokenableInterface
      */
     public function accept(TokenInterface $token)
     {
+        $message = 'Token accepted into ' . $this->getName();
+        $this->logger->info($message, array('token' => $token));
+
         $this->tokens[] = $token;
+        $this->preExecute($token);
+        $this->execute($token);
+        $this->postExecute($token);
 
         return true;
+    }
+
+    public function execute(TokenInterface $token)
+    {
+        throw new \Exception('The execute method needs to be implement in your class');
     }
 
     /**
@@ -69,5 +80,10 @@ class Tokenable extends Node implements TokenableInterface
     public function getTokens()
     {
         return $this->tokens;
+    }
+
+    protected function preExecute(TokenInterface $token)
+    {
+
     }
 }

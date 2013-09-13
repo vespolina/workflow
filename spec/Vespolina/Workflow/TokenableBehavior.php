@@ -5,15 +5,8 @@ namespace spec\Vespolina\Workflow;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-class TokenableSpec extends ObjectBehavior
+class TokenableBehavior extends ObjectBehavior
 {
-
-    function it_is_initializable()
-    {
-        $this->shouldHaveType('Vespolina\Workflow\Tokenable');
-        $this->shouldReturnAnInstanceOf('Vespolina\Workflow\Node');
-    }
-
     /**
      * @param \Vespolina\Workflow\Token $token
      */

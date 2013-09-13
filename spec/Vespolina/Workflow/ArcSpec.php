@@ -14,8 +14,8 @@ class ArcSpec extends ObjectBehavior
     }
 
     /**
-     * @param \Vespolina\Workflow\PlaceInterface $place
-     * @param \Vespolina\Workflow\TransactionInterface $transaction
+     * @param \Vespolina\Workflow\Place $place
+     * @param \Vespolina\Workflow\Transaction $transaction
      */
     function it_should_only_connect_between_a_place_and_transaction($place, $transaction)
     {
@@ -27,25 +27,20 @@ class ArcSpec extends ObjectBehavior
     }
 
     /**
-     * @param \Vespolina\Workflow\Place $place
-     * @param \Vespolina\Workflow\Transaction $transaction
+     * @param \Vespolina\Workflow\Tokenable $from
      */
-    function it_should_add_itself_to_the_target_node($place, $transaction)
+    function it_should_add_self_to_tokenable_from($from)
     {
-        $this->setFrom($place)->shouldSetSelfInOutput($this, $place);
-        $this->setTo($transaction)->shouldSetSelfInInput($this, $transaction);
-
+        $this->setFrom($from);
+        $from->addOutput($this)->shouldHaveBeenCalled();
     }
 
-    public function getMatchers()
+    /**
+     * @param \Vespolina\Workflow\Tokenable $to
+     */
+    function it_should_add_self_to_tokenable_to($to)
     {
-        return [
-            'setSelfInOutput' => function($return, $arc, $tokenable) {
-                return in_array($arc, $tokenable->getOutputs());
-            },
-            'setSelfInInput' => function($return, $arc, $tokenable) {
-                return in_array($arc, $tokenable->getInputs());
-            },
-        ];
+        $this->setTo($to);
+        $to->addInput($this)->shouldHaveBeenCalled();
     }
 }

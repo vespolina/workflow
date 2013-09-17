@@ -2,6 +2,8 @@
 
 namespace Vespolina\Workflow;
 
+use Psr\Log\LoggerInterface;
+
 class Node implements NodeInterface
 {
     protected $logger;
@@ -9,9 +11,7 @@ class Node implements NodeInterface
     protected $workflow;
 
     /**
-     * Set the name
-     *
-     * @param string $name
+     * {@inheritdoc}
      */
     public function setName($name)
     {
@@ -21,16 +21,17 @@ class Node implements NodeInterface
     }
 
     /**
-     * Return the name
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getName()
     {
         return $this->name;
     }
 
-    public function setWorkflow($workflow, $logger)
+    /**
+     * {@inheritdoc}
+     */
+    public function setWorkflow(Workflow $workflow, LoggerInterface $logger)
     {
         $this->workflow = $workflow;
         $this->logger = $logger;

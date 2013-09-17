@@ -43,4 +43,16 @@ class ArcSpec extends ObjectBehavior
         $this->setTo($to);
         $to->addInput($this)->shouldHaveBeenCalled();
     }
+
+    /**
+     * @param \Vespolina\Workflow\Token $token
+     */
+    function it_should_accept_and_forfeit_a_token($token)
+    {
+        $this->forfeit()->shouldReturn(null);
+        $this->accept($token)->shouldReturn(true);
+        $this->shouldThrow(new \InvalidArgumentException('There is already a token in this arc'))->duringAccept($token);
+        $this->forfeit()->shouldReturn($token);
+        $this->forfeit()->shouldReturn(null);
+    }
 }

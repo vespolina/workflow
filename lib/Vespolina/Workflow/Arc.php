@@ -6,6 +6,7 @@ class Arc extends Node
 {
     protected $from;
     protected $to;
+    protected $token;
 
     public function setFrom(TokenableInterface $tokenable)
     {
@@ -38,5 +39,23 @@ class Arc extends Node
         }
 
         return 'Vespolina\Workflow\TransactionInterface';
+    }
+
+    public function forfeit()
+    {
+        $token = $this->token;
+        $this->token = null;
+
+        return $token;
+    }
+
+    public function accept($token)
+    {
+        if ($this->token) {
+            throw new \InvalidArgumentException('There is already a token in this arc');
+        }
+        $this->token = $token;
+
+        return true;
     }
 }

@@ -7,11 +7,14 @@ use Prophecy\Argument;
 
 class TokenableBehavior extends ObjectBehavior
 {
+
     /**
      * @param \Vespolina\Workflow\Token $token
      */
     function it_should_accept_a_token($token)
     {
+        $this->execute($token)->willReturn("");
+
         $this->accept($token)->shouldReturn(true);
         $this->getTokens()->shouldHaveToken($token);
     }

@@ -47,6 +47,17 @@ class WorkflowSpec extends ObjectBehavior
     }
 
     /**
+     * @param \Vespolina\Workflow\Node $node
+     */
+    function it_should_add_a_node($node, $logger)
+    {
+        $this->addNode($node);
+        $this->getNodes()->shouldContainNode($node);
+        $node->setWorkflow($this, $logger)->shouldHaveBeenCalled();
+
+    }
+
+    /**
      * @param \Vespolina\Workflow\Place $place
      * @param \Vespolina\Workflow\Task\Automatic $transaction
      * @param \Vespolina\Workflow\Place $place2
@@ -63,16 +74,22 @@ class WorkflowSpec extends ObjectBehavior
     }
 
     /**
-     * @param \Monolog\Logger $logger
-     * @param \Monolog\Handler\TestHandler $handler
+     * @param \Vespolina\Workflow\Token $token
+     */
+    function it_should_log_accept_token($logger, $token)
+    {
+        $this->accept($token);
+        $logger->info('Token accepted into workflow', array('token' => $token))->shouldHaveBeenCalled();
+    }
+
+    /**
      * @param \Vespolina\Workflow\Task\Automatic $a
      * @param \Vespolina\Workflow\Place $c2
      * @param \Vespolina\Workflow\Task\Automatic $b
      *
      */
-    function it_should_handle_sequence_pattern($logger, $handler, $a, $c1, $b)
+    function it_should_handle_sequence_pattern($a, $c1, $b)
     {
-        $logger->pushHandler($handler);
 
 
     }

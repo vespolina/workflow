@@ -37,11 +37,13 @@ class Workflow
     public function accept(TokenInterface $token)
     {
         $this->tokens[] = $token;
+        $this->logger->info('Token accepted into workflow', array('token' => $token));
         if ($this->getInput()->accept($token)) {
-            $this->logger->info('Token accepted into workflow, token accepted in input', array('token' => $token));
+
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     public function connect(TokenableInterface $from, TokenableInterface $to)
@@ -78,6 +80,7 @@ class Workflow
 
     public function addNode(NodeInterface $node)
     {
+        $node->setWorkflow($this, $this->logger);
         $this->nodes[] = $node;
     }
 

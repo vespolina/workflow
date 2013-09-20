@@ -41,14 +41,6 @@ class Arc extends Node
         return 'Vespolina\Workflow\TransactionInterface';
     }
 
-    public function forfeit()
-    {
-        $token = $this->token;
-        $this->token = null;
-
-        return $token;
-    }
-
     public function accept($token)
     {
         if ($this->token) {
@@ -57,5 +49,22 @@ class Arc extends Node
         $this->token = $token;
 
         return true;
+    }
+
+    public function forfeit()
+    {
+        $token = $this->token;
+        $this->token = null;
+
+        return $token;
+    }
+
+    public function hasToken(TokenInterface $token)
+    {
+        if ($this->token === $token) {
+            return true;
+        }
+
+        return false;
     }
 }

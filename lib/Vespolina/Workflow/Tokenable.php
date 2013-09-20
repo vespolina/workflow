@@ -82,6 +82,11 @@ abstract class Tokenable extends Node implements TokenableInterface
         return $this->tokens;
     }
 
+    protected function postExecute(TokenInterface $token)
+    {
+
+    }
+
     protected function preExecute(TokenInterface $token)
     {
 

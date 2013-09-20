@@ -55,4 +55,16 @@ class ArcSpec extends ObjectBehavior
         $this->forfeit()->shouldReturn($token);
         $this->forfeit()->shouldReturn(null);
     }
+
+    /**
+     * @param \Vespolina\Workflow\Token $token
+     * @param \Vespolina\Workflow\Token $failingToken
+     */
+    function it_should_compare_its_token_to_another($token, $failingToken)
+    {
+        $this->hasToken($token)->shouldReturn(false);
+        $this->accept($token);
+        $this->hasToken($token)->shouldReturn(true);
+        $this->hasToken($failingToken)->shouldReturn(false);
+    }
 }

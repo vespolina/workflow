@@ -36,7 +36,7 @@ class Workflow
      */
     public function accept(TokenInterface $token)
     {
-        $this->tokens[] = $token;
+        $this->addToken($token);
         $this->logger->info('Token accepted into workflow', array('token' => $token));
         if ($this->getInput()->accept($token)) {
 
@@ -94,6 +94,11 @@ class Workflow
         return $this->output;
     }
 
+    public function addToken(TokenInterface $token)
+    {
+        $this->tokens[] = $token;
+    }
+
     /**
      * Return the tokens
      *
@@ -102,5 +107,16 @@ class Workflow
     public function getTokens()
     {
         return $this->tokens;
+    }
+
+    public function removeToken(TokenInterface $token)
+    {
+        foreach ($this->tokens as $key => $curToken) {
+            if ($token === $curToken) {
+                unset($this->tokens[$key]);
+
+                return;
+            }
+        }
     }
 }

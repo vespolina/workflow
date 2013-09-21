@@ -2,7 +2,7 @@
 
 namespace Vespolina\Workflow;
 
-class Arc extends Node
+class Arc extends Node implements ArcInterface
 {
     protected $from;
     protected $to;
@@ -41,7 +41,7 @@ class Arc extends Node
         return 'Vespolina\Workflow\TransactionInterface';
     }
 
-    public function accept($token)
+    public function accept(TokenInterface $token)
     {
         if ($this->token) {
             throw new \InvalidArgumentException('There is already a token in this arc');

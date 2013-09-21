@@ -23,6 +23,7 @@ abstract class Tokenable extends Node implements TokenableInterface
         $this->preExecute($token);
         $this->execute($token);
         $this->postExecute($token);
+        $this->cleanUp($token);
 
         return true;
     }
@@ -80,6 +81,11 @@ abstract class Tokenable extends Node implements TokenableInterface
     public function getTokens()
     {
         return $this->tokens;
+    }
+
+    protected function cleanUp(TokenInterface $token)
+    {
+
     }
 
     protected function postExecute(TokenInterface $token)

@@ -5,9 +5,7 @@ namespace spec\Vespolina\Workflow;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-require_once __DIR__ . '/TokenableBehavior.php';
-
-class TransactionSpec extends TokenableBehavior
+class TransactionSpec
 {
     /**
      * @param \Vespolina\Workflow\Workflow $workflow
@@ -17,7 +15,6 @@ class TransactionSpec extends TokenableBehavior
     function let($workflow, $logger, $token)
     {
         $this->setWorkflow($workflow, $logger);
-        $this->execute($token)->willReturn("");
     }
 
     function it_is_initializable()

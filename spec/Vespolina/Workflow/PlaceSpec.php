@@ -6,9 +6,7 @@ use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Vespolina\Workflow\Arc;
 
-require_once __DIR__ . '/TokenableBehavior.php';
-
-class PlaceSpec extends TokenableBehavior
+class PlaceSpec
 {
     /**
      * @param \Vespolina\Workflow\Workflow $workflow

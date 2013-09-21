@@ -28,16 +28,6 @@ class WorkflowSpec extends ObjectBehavior
     }
 
     /**
-     * @param \Vespolina\Workflow\Token $token
-     */
-    function it_should_accept_a_token_to_start($token)
-    {
-        $this->accept($token)->shouldReturn(true);
-        $this->getTokens()->shouldContainToken($token);
-        $this->getInput()->getTokens()->shouldContainToken($token);
-    }
-
-    /**
      * @param \Vespolina\Workflow\Place $from
      * @param \Vespolina\Workflow\Task\Automatic $to
      */
@@ -54,7 +44,6 @@ class WorkflowSpec extends ObjectBehavior
         $this->addNode($node);
         $this->getNodes()->shouldContainNode($node);
         $node->setWorkflow($this, $logger)->shouldHaveBeenCalled();
-
     }
 
     /**
@@ -71,27 +60,6 @@ class WorkflowSpec extends ObjectBehavior
         $this->connect($transaction, $place2);
         $this->getNodes()->shouldContainNodeOnce($transaction);
         $this->getNodes()->shouldContainNode($place2);
-    }
-
-    /**
-     * @param \Vespolina\Workflow\Token $token
-     */
-    function it_should_log_accept_token($logger, $token)
-    {
-        $this->accept($token);
-        $logger->info('Token accepted into workflow', array('token' => $token))->shouldHaveBeenCalled();
-    }
-
-    /**
-     * @param \Vespolina\Workflow\Task\Automatic $a
-     * @param \Vespolina\Workflow\Place $c2
-     * @param \Vespolina\Workflow\Task\Automatic $b
-     *
-     */
-    function it_should_handle_sequence_pattern($a, $c1, $b)
-    {
-
-
     }
 
     public function getMatchers()

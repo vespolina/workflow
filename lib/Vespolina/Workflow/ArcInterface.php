@@ -19,11 +19,11 @@ interface ArcInterface extends NodeInterface
     public function setTo(TokenableInterface $tokenable);
 
     /**
-     * @param TokenableInterface $token
+     * @param TokenInterface $token
      * @return mixed
      * @throws \InvalidArgumentException
      */
-    public function accept(TokenableInterface $token);
+    public function accept(TokenInterface $token);
 
     /**
      * @return TokenableInterface

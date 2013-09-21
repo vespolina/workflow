@@ -21,9 +21,6 @@ class PlaceTest extends \PHPUnit_Framework_TestCase
         $outArc->setFrom($place);
 
         $this->assertTrue($place->execute($token));
-        foreach ($place->getInputs() as $arc) {
-            $this->assertNull($arc->forfeit(), 'there should not be an tokens in the input now');
-        }
 
         foreach ($place->getOutputs() as $arc) { // there is only one output
             $this->assertSame($token, $arc->forfeit(), 'the exact token should have been passed with one output');
@@ -33,7 +30,6 @@ class PlaceTest extends \PHPUnit_Framework_TestCase
         // all tokens have been forfeited, begin next test
         $outArc2 = WorkflowCommon::createArc();
         $outArc2->setFrom($place);
-
         $inArc->accept($token);
 
         // workflow original token removed, cloned tokens replaced
@@ -52,30 +48,5 @@ class PlaceTest extends \PHPUnit_Framework_TestCase
             $this->assertNotSame($token, $workflowToken);
             $this->assertContains($workflowToken, $outputTokens);
         }
-    }
-
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testExecuteEmptyException()
-    {
-        $place = WorkflowCommon::createPlace();
-        $arc = WorkflowCommon::createArc();
-        $place->addInput($arc);
-        $token = WorkflowCommon::createToken();
-        $place->execute($token);
-    }
-
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testExecuteMissingTokenException()
-    {
-        $place = WorkflowCommon::createPlace();
-        $arc = WorkflowCommon::createArc();
-        $arc->accept(WorkflowCommon::createToken());
-        $place->addInput($arc);
-        $token = WorkflowCommon::createToken();
-        $place->execute($token);
     }
 }

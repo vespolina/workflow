@@ -20,6 +20,7 @@ abstract class Tokenable extends Node implements TokenableInterface
         $this->logger->info($message, array('token' => $token));
 
         $this->tokens[] = $token;
+        $this->transferTokenFromInput($token);
         $this->preExecute($token);
         $this->execute($token);
         $this->postExecute($token);
@@ -96,5 +97,54 @@ abstract class Tokenable extends Node implements TokenableInterface
     protected function preExecute(TokenInterface $token)
     {
 
+    }
+
+    protected function transferTokenFromInput(TokenInterface $token)
+    {
+        $inputs = $this->getInputs();
+        foreach ($inputs as $input) {
+            if ($input->hasToken($token)) {
+                $input->forfeit();
+                continue;
+            }
+        }
+    }
+
+    protected function finalize(TokenInterface $token)
+    {
+        $outputs = $this->getOutputs();
+        // single out, no token clone, just update the node location
+        if (sizeof($outputs) == 1) {
+            $output = array_shift($outputs);
+            $output->accept($token);
+            $this->removeToken($token);
+
+            return true;
+        }
+
+        // multiple outs, clone for each path, remove original token
+        foreach ($this->getOutputs() as $output) {
+            $newToken = clone $token;
+            $this->workflow->addToken($newToken);
+            $output->accept($newToken);
+        }
+        $this->workflow->removeToken($token);
+        $this->removeToken($token);
+    }
+
+    /**
+     * Remove a token from the collection of tokens
+     *
+     * @param TokenInterface $token
+     */
+    protected function removeToken(TokenInterface $token)
+    {
+        foreach ($this->tokens as $key => $curToken) {
+            if ($token === $curToken) {
+                unset($this->tokens[$key]);
+
+                return true;
+            }
+        }
     }
 }

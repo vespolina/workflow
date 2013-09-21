@@ -6,22 +6,18 @@ use Vespolina\Tests\WorkflowCommon;
 
 class WorkflowTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
-     * @param \Vespolina\Workflow\Task\Automatic $a
-     * @param \Vespolina\Workflow\Place $c2
-     * @param \Vespolina\Workflow\Task\Automatic $b
-     *
+     *  O -> [A] -> O -> [B] -> O
+     * in          p1          out
      */
-    function it_should_handle_sequence_pattern($a, $c1, $b)
-    {
-
-
-    }
-    public function testSequencePattern()
+    public function testSequentialPattern()
     {
         $workflow = WorkflowCommon::createWorkflow();
         $token = WorkflowCommon::createToken();
+
+        $a = $this->getMock('Vespolina\Workflow\Tasks\Automatic');
+        $a->expects($this->once())
+            ->method('accept');
 
         $this->assertTrue($workflow->accept($token));
         $this->assertContains($token, $workflow->getTokens());

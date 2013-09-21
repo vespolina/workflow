@@ -6,6 +6,14 @@ use Vespolina\Tests\WorkflowCommon;
 
 class WorkflowTest extends \PHPUnit_Framework_TestCase
 {
+    public function testAddArcNode()
+    {
+        $workflow = WorkflowCommon::createWorkflow();
+        $arc = WorkflowCommon::createArc();
+        $workflow->addNode($arc);
+        $this->assertContains($arc, $workflow->getArcs());
+    }
+
     public function testRemoveToken()
     {
         $workflow = WorkflowCommon::createWorkflow();
@@ -19,5 +27,10 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
 
         $this->assertContains($token, $workflow->getTokens());
         $this->assertNotContains($token2, $workflow->getTokens());
+    }
+
+    public function testValidateWorkflow()
+    {
+
     }
 }

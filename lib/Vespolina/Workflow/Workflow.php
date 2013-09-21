@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
  */
 class Workflow
 {
+    protected $arcs;
     protected $input;
     protected $logger;
     protected $nodes;
@@ -46,6 +47,16 @@ class Workflow
         return false;
     }
 
+    /**
+     * Return the arcs
+     *
+     * @return mixed
+     */
+    public function getArcs()
+    {
+        return $this->arcs;
+    }
+
     public function connect(TokenableInterface $from, TokenableInterface $to)
     {
         if ($from instanceof PlaceInterface && $to instanceof PlaceInterface) {
@@ -69,6 +80,7 @@ class Workflow
         $arc = new Arc();
         $arc->setFrom($from);
         $arc->setTo($to);
+        $this->addNode($arc);
 
         return $arc;
     }
@@ -82,6 +94,10 @@ class Workflow
     {
         $node->setWorkflow($this, $this->logger);
         $this->nodes[] = $node;
+
+        if ($node instanceof ArcInterface) {
+            $this->arcs[] = $node;
+        }
     }
 
     public function getNodes()
@@ -109,6 +125,11 @@ class Workflow
         return $this->tokens;
     }
 
+    /**
+     * Remove a token from the collection of tokens
+     *
+     * @param TokenInterface $token
+     */
     public function removeToken(TokenInterface $token)
     {
         foreach ($this->tokens as $key => $curToken) {
@@ -119,4 +140,17 @@ class Workflow
             }
         }
     }
+
+    public function validateWorkflow()
+    {
+        $nodes = $this->getNodes();
+        $startingNode = $this->getInput();
+        $this->traverseNext($startingNode);
+    }
+
+    public function traverseNext($node)
+    {
+
+    }
+
 }

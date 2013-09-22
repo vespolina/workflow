@@ -2,6 +2,7 @@
 
 namespace Vespolina\Tests;
 
+use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Vespolina\Workflow\Arc;
 use Vespolina\Workflow\Place;

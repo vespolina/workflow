@@ -43,6 +43,7 @@ class TokenableTest extends \PHPUnit_Framework_TestCase
         foreach ($tokenable->getInputs() as $arc) {
             $this->assertNotSame($token, $arc->forfeit(), 'the token should not be in the input now');
         }
+        $this->assertSame($tokenable, $token->getLocation(), 'the location of the token should be updated');
     }
 
     public function testAddInput()
@@ -61,7 +62,7 @@ class TokenableTest extends \PHPUnit_Framework_TestCase
         $this->assertContains($arc, $tokenable->getOutputs());
     }
 
-    public function testTransferTokenToOutputs()
+    public function testFinalize()
     {
         $logger = new Logger('test');
         $workflow = WorkflowCommon::createWorkflow($logger);

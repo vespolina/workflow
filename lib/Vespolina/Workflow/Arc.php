@@ -20,6 +20,16 @@ class Arc extends Node implements ArcInterface
         $this->from = $tokenable;
     }
 
+    /**
+     * Return the from
+     *
+     * @return mixed
+     */
+    public function getFrom()
+    {
+        return $this->from;
+    }
+
     public function setTo(TokenableInterface $tokenable)
     {
         if (isset($this->from)) {
@@ -30,6 +40,16 @@ class Arc extends Node implements ArcInterface
         }
         $tokenable->addInput($this);
         $this->to = $tokenable;
+    }
+
+    /**
+     * Return the to
+     *
+     * @return mixed
+     */
+    public function getTo()
+    {
+        return $this->to;
     }
 
     protected function getExpectedInterface(TokenableInterface $tokenable)
@@ -47,6 +67,7 @@ class Arc extends Node implements ArcInterface
             throw new \InvalidArgumentException('There is already a token in this arc');
         }
         $this->token = $token;
+        $token->setLocation($this);
 
         return true;
     }

@@ -144,13 +144,52 @@ class Workflow
     public function validateWorkflow()
     {
         $nodes = $this->getNodes();
+        $this->currentValidationStep('reset');
         $startingNode = $this->getInput();
-        $this->traverseNext($startingNode);
+        $success = $this->traverseNext($startingNode);
+
+        return $success;
     }
 
     public function traverseNext($node)
     {
+        $this->logger->info(sprintf('Node %s reached, step %s', $node->getName(), $this->currentValidationStep()));
 
+        if ($node == $this->getOutput()) {
+            return true;
+        }
+        if (!$arcs = $node->getOutputs()) {
+            $this->logger->debug('Missing output arc for ' . $node->getName());
+
+            return false;
+        }
+
+        $success = true;
+        foreach ($arcs as $arc) {
+            if (!$arc->getTo()) {
+                $success = false;
+                $this->logger->debug(sprintf('Broken arc %s from %s', $arc->getName(), $node->getName()));
+                continue;
+            }
+            $this->logger->info(sprintf('Traversing arc %s, step %s', $arc->getName(), $this->currentValidationStep()));
+            $success = ($this->traverseNext($arc->getTo()) && $success);
+        }
+
+        return $success;
+    }
+
+    protected function currentValidationStep($reset = '')
+    {
+        static $step;
+
+        if ($reset == 'reset') {
+            $step = 0;
+
+            return;
+        }
+        $step++;
+
+        return $step;
     }
 
 }

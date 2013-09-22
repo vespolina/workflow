@@ -20,6 +20,7 @@ abstract class Tokenable extends Node implements TokenableInterface
         $this->logger->info($message, array('token' => $token));
 
         $this->tokens[] = $token;
+        $token->setLocation($this);
         $this->transferTokenFromInput($token);
         $this->preExecute($token);
         $this->execute($token);

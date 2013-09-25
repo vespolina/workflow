@@ -20,14 +20,7 @@ interface ArcInterface extends NodeInterface
 
     /**
      * @param TokenInterface $token
-     * @return mixed
-     * @throws \InvalidArgumentException
-     */
-    public function accept(TokenInterface $token);
-
-    /**
-     * @param TokenInterface $token
      * @return boolean
      */
-    public function hasToken(TokenInterface $token);
+    public function accept(TokenInterface $token);
 }

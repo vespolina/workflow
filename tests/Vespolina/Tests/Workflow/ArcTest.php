@@ -7,7 +7,7 @@ use Vespolina\Tests\WorkflowCommon;
 
 class ArcTest extends \PHPUnit_Framework_TestCase
 {
-    public function testAccept()
+    public function testAcceptSuccess()
     {
         $arc = WorkflowCommon::createArc();
         $tokenable = $this->getMock('Vespolina\Workflow\Tokenable', array('accept'));
@@ -16,8 +16,18 @@ class ArcTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(true));
         $arc->setTo($tokenable);
         $token = WorkflowCommon::createToken();
-        $arc->accept($token);
+        $this->assertTrue($arc->accept($token), 'true should be returned when successful');
+    }
 
-        $this->assertSame($tokenable, $token->getLocation(), 'the tokenable should be the location of the token');
+    public function testAcceptFailure()
+    {
+        $arc = WorkflowCommon::createArc();
+        $tokenable = $this->getMock('Vespolina\Workflow\Tokenable', array('accept'));
+        $tokenable->expects($this->once())
+            ->method('accept')
+            ->will($this->throwException(new \Exception));
+        $arc->setTo($tokenable);
+        $token = WorkflowCommon::createToken();
+        $this->assertFalse($arc->accept($token), 'true should be returned when successful');
     }
 }

@@ -8,6 +8,17 @@ class Arc extends Node implements ArcInterface
     protected $to;
     protected $token;
 
+    public function accept(TokenInterface $token)
+    {
+        try {
+            $this->to->accept($token);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return true;
+    }
+
     public function setFrom(TokenableInterface $tokenable)
     {
         if (isset($this->to)) {
@@ -59,26 +70,5 @@ class Arc extends Node implements ArcInterface
         }
 
         return 'Vespolina\Workflow\TransactionInterface';
-    }
-
-    public function accept(TokenInterface $token)
-    {
-        if ($this->token) {
-            throw new \InvalidArgumentException('There is already a token in this arc');
-        }
-        $this->token = $token;
-        $token->setLocation($this->to);
-        $this->to->accept($token);
-
-        return true;
-    }
-
-    public function hasToken(TokenInterface $token)
-    {
-        if ($this->token === $token) {
-            return true;
-        }
-
-        return false;
     }
 }

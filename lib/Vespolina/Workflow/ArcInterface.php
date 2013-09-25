@@ -26,11 +26,6 @@ interface ArcInterface extends NodeInterface
     public function accept(TokenInterface $token);
 
     /**
-     * @return TokenableInterface
-     */
-    public function forfeit();
-
-    /**
      * @param TokenInterface $token
      * @return boolean
      */

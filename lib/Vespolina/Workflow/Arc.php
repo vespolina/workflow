@@ -67,17 +67,10 @@ class Arc extends Node implements ArcInterface
             throw new \InvalidArgumentException('There is already a token in this arc');
         }
         $this->token = $token;
-        $token->setLocation($this);
+        $token->setLocation($this->to);
+        $this->to->accept($token);
 
         return true;
-    }
-
-    public function forfeit()
-    {
-        $token = $this->token;
-        $this->token = null;
-
-        return $token;
     }
 
     public function hasToken(TokenInterface $token)

@@ -7,46 +7,26 @@ use Vespolina\Tests\WorkflowCommon;
 
 class PlaceTest extends \PHPUnit_Framework_TestCase
 {
-    public function testExecute()
+    public function testExecuteSuccess()
     {
-        $logger = new Logger('test');
-        $workflow = WorkflowCommon::createWorkflow($logger);
-        $place = WorkflowCommon::createPlace($workflow, $logger);
+        $place = $this->getMock('Vespolina\Workflow\Place', array('finalize'));
+        $place->expects($this->once())
+            ->method('finalize')
+            ->will($this->returnValue(true));
         $token = WorkflowCommon::createToken();
-        $workflow->addToken($token);
-        $inArc = WorkflowCommon::createArc();
-        $inArc->accept($token);
-        $inArc->setTo($place);
-        $outArc = WorkflowCommon::createArc();
-        $outArc->setFrom($place);
 
-        $this->assertTrue($place->execute($token));
+        $this->assertTrue($place->execute($token), 'true should be returned when successful');
 
-        foreach ($place->getOutputs() as $arc) { // there is only one output
-            $this->assertSame($token, $arc->forfeit(), 'the exact token should have been passed with one output');
-        }
-        $this->assertCount(1, $workflow->getTokens());
+    }
 
-        // all tokens have been forfeited, begin next test
-        $outArc2 = WorkflowCommon::createArc();
-        $outArc2->setFrom($place);
-        $inArc->accept($token);
+    public function testExecuteFailure()
+    {
+        $place = $this->getMock('Vespolina\Workflow\Place', array('finalize'));
+        $place->expects($this->once())
+            ->method('finalize')
+            ->will($this->throwException(new \Exception));
+        $token = WorkflowCommon::createToken();
 
-        // workflow original token removed, cloned tokens replaced
-        $this->assertTrue($place->execute($token));
-
-        $outputTokens = [];
-        foreach ($place->getOutputs() as $arc) { // there is only one output
-            $arcToken = $arc->forfeit();
-            $outputTokens[] = $arcToken;
-            $this->assertEquals($token, $arcToken, 'the exact token should have been passed with one output');
-            $this->assertNotSame($token, $arcToken, 'the exact token should have been passed with one output');
-        }
-
-        $this->assertCount(2, $workflow->getTokens());
-        foreach ($workflow->getTokens() as $workflowToken) {
-            $this->assertNotSame($token, $workflowToken);
-            $this->assertContains($workflowToken, $outputTokens);
-        }
+        $this->assertFalse($place->execute($token), 'false should be returned when there is a problem');
     }
 }

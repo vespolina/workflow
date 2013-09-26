@@ -143,7 +143,6 @@ class Workflow
 
     public function validateWorkflow()
     {
-        $nodes = $this->getNodes();
         $this->currentValidationStep('reset');
         $startingNode = $this->getInput();
         $success = $this->traverseNext($startingNode);
@@ -153,13 +152,13 @@ class Workflow
 
     public function traverseNext($node)
     {
-        $this->logger->info(sprintf('Node %s reached, step %s', $node->getName(), $this->currentValidationStep()));
+        $this->logger->info(sprintf('Node %s reached, step %s', $node->getName(), $this->currentValidationStep()), array('node' => $node));
 
         if ($node == $this->getOutput()) {
             return true;
         }
         if (!$arcs = $node->getOutputs()) {
-            $this->logger->debug('Missing output arc for ' . $node->getName());
+            $this->logger->debug('Missing output arc for ' . $node->getName(), array('node' => $node));
 
             return false;
         }
@@ -168,10 +167,10 @@ class Workflow
         foreach ($arcs as $arc) {
             if (!$arc->getTo()) {
                 $success = false;
-                $this->logger->debug(sprintf('Broken arc %s from %s', $arc->getName(), $node->getName()));
+                $this->logger->debug(sprintf('Broken arc %s from %s', $arc->getName(), $node->getName()), array('arc' => $arc));
                 continue;
             }
-            $this->logger->info(sprintf('Traversing arc %s, step %s', $arc->getName(), $this->currentValidationStep()));
+            $this->logger->info(sprintf('Traversing arc %s, step %s', $arc->getName(), $this->currentValidationStep()), array('arc' => $arc));
             $success = ($this->traverseNext($arc->getTo()) && $success);
         }
 

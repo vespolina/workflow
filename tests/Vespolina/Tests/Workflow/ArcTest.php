@@ -28,6 +28,6 @@ class ArcTest extends \PHPUnit_Framework_TestCase
             ->will($this->throwException(new \Exception));
         $arc->setTo($tokenable);
         $token = WorkflowCommon::createToken();
-        $this->assertFalse($arc->accept($token), 'true should be returned when successful');
+        $this->assertFalse($arc->accept($token), 'false should be returned when there is a problem');
     }
 }

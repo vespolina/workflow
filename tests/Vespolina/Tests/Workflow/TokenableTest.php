@@ -21,10 +21,8 @@ class TokenableTest extends \PHPUnit_Framework_TestCase
         );
         $tokenable->setWorkflow($workflow, $logger);
         $inArc = WorkflowCommon::createArc();
-        $inArc->accept($token);
         $inArc->setTo($tokenable);
         $otherArc = WorkflowCommon::createArc();
-        $otherArc->accept(WorkflowCommon::createToken());
         $otherArc->setTo($tokenable);
 
         $tokenable->expects($this->once())
@@ -40,9 +38,6 @@ class TokenableTest extends \PHPUnit_Framework_TestCase
         $this->assertContains($token, $tokenable->getTokens());
         $this->assertTrue($handler->hasInfo('Token accepted into '));
 
-        foreach ($tokenable->getInputs() as $arc) {
-            $this->assertNotSame($token, $arc->forfeit(), 'the token should not be in the input now');
-        }
         $this->assertSame($tokenable, $token->getLocation(), 'the location of the token should be updated');
     }
 
@@ -62,7 +57,7 @@ class TokenableTest extends \PHPUnit_Framework_TestCase
         $this->assertContains($arc, $tokenable->getOutputs());
     }
 
-    public function testFinalize()
+    public function testFinalizeSingleArc()
     {
         $logger = new Logger('test');
         $workflow = WorkflowCommon::createWorkflow($logger);
@@ -71,37 +66,57 @@ class TokenableTest extends \PHPUnit_Framework_TestCase
         $token = WorkflowCommon::createToken();
         $tokenable->setToken($token);
         $workflow->addToken($token);
-        $outArc = WorkflowCommon::createArc();
+        $outArc = $this->getMock('Vespolina\Workflow\Arc', array('accept'));
+        $outArc->expects($this->once())
+            ->method('accept')
+            ->will($this->returnValue(true));
         $outArc->setFrom($tokenable);
 
-        $tokenable->finalize($token);
-        foreach ($tokenable->getOutputs() as $arc) { // there is only one output
-            $this->assertSame($token, $arc->forfeit(), 'the exact token should have been passed with one output');
-        }
+        $this->assertTrue($tokenable->finalize($token));
         $this->assertCount(1, $workflow->getTokens());
         $this->assertNotContains($token, $tokenable->getTokens(), 'the token should not longer be in tokenable');
+    }
 
-        // all tokens have been forfeited, begin next test
-        $outArc2 = WorkflowCommon::createArc();
-        $outArc2->setFrom($tokenable);
+    public function testFinalizeMultipleArcs()
+    {
+        $logger = new Logger('test');
+        $workflow = WorkflowCommon::createWorkflow($logger);
+        $tokenable = new ExtendedTokenable();
+        $tokenable->setWorkflow($workflow, $logger);
+        $token = WorkflowCommon::createToken();
         $tokenable->setToken($token);
+        $workflow->addToken($token);
 
-        // workflow original token removed, cloned tokens replaced
-        $tokenable->finalize($token);
+        $place1 = WorkflowCommon::createPlace();
+        $place1->setWorkflow($workflow, $logger);
+        $arc1 = $this->getMock('Vespolina\Workflow\Arc', array('getExpectedInterface'));
+        $arc1->expects($this->any())
+            ->method('getExpectedInterface')
+            ->will($this->returnValue('Vespolina\Workflow\PlaceInterface'));
+        $arc1->setFrom($tokenable);
+        $arc1->setTo($place1);
 
-        $outputTokens = [];
-        foreach ($tokenable->getOutputs() as $arc) {
-            $arcToken = $arc->forfeit();
-            $outputTokens[] = $arcToken;
-            $this->assertEquals($token, $arcToken, 'the exact token should have been passed with one output');
-            $this->assertNotSame($token, $arcToken, 'the exact token should have been passed with one output');
+        $place2 = WorkflowCommon::createPlace();
+        $place2->setWorkflow($workflow, $logger);
+        $arc2 = $this->getMock('Vespolina\Workflow\Arc', array('getExpectedInterface'));
+        $arc2->expects($this->any())
+            ->method('getExpectedInterface')
+            ->will($this->returnValue('Vespolina\Workflow\PlaceInterface'));
+        $arc2->setFrom($tokenable);
+        $arc2->setTo($place2);
+
+        $this->assertTrue($tokenable->finalize($token));
+
+        $outputTokens = array_merge($place1->getTokens(), $place2->getTokens());
+        foreach ($outputTokens as $curToken) {
+            $this->assertNotSame($token, $curToken, 'the token should be a clone');
         }
 
         $this->assertNotContains($token, $tokenable->getTokens(), 'the token should not longer be in tokenable');
         $this->assertCount(2, $workflow->getTokens());
         foreach ($workflow->getTokens() as $workflowToken) {
-            $this->assertNotSame($token, $workflowToken);
-            $this->assertContains($workflowToken, $outputTokens);
+            $this->assertNotSame($token, $workflowToken, 'the tokens should be clones');
+            $this->assertContains($workflowToken, $outputTokens, 'the workflow tokens should also be the same token in the arc "to"');
         }
     }
 }

@@ -21,7 +21,6 @@ abstract class Tokenable extends Node implements TokenableInterface
 
         $this->tokens[] = $token;
         $token->setLocation($this);
-        $this->transferTokenFromInput($token);
         $this->preExecute($token);
         $this->execute($token);
         $this->postExecute($token);
@@ -100,17 +99,6 @@ abstract class Tokenable extends Node implements TokenableInterface
 
     }
 
-    protected function transferTokenFromInput(TokenInterface $token)
-    {
-        $inputs = $this->getInputs();
-        foreach ($inputs as $input) {
-            if ($input->hasToken($token)) {
-                $input->forfeit();
-                continue;
-            }
-        }
-    }
-
     protected function finalize(TokenInterface $token)
     {
         $outputs = $this->getOutputs();
@@ -131,6 +119,8 @@ abstract class Tokenable extends Node implements TokenableInterface
         }
         $this->workflow->removeToken($token);
         $this->removeToken($token);
+
+        return true;
     }
 
     /**

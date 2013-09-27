@@ -2,7 +2,11 @@
 
 namespace Vespolina\Tests\Functional;
 
+use Monolog\Handler\TestHandler;
+use Monolog\Logger;
 use Vespolina\Tests\WorkflowCommon;
+use Vespolina\Workflow\Task\Automatic;
+use Vespolina\Workflow\TokenInterface;
 
 class WorkflowTest extends \PHPUnit_Framework_TestCase
 {
@@ -12,26 +16,59 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
      */
     public function testSequentialPattern()
     {
-        $workflow = WorkflowCommon::createWorkflow();
+        $handler = new TestHandler();
+        $logger = new Logger('test', array($handler));
+        $workflow = WorkflowCommon::createWorkflow($logger);
+
+        // create sequence
+        $a = new AutoA();
+        $workflow->connect($workflow->getInput(), $a);
+        $p = WorkflowCommon::createPlace($workflow, $logger);
+        $workflow->connect($a, $p);
+        $b = new AutoB();
+        $workflow->connect($p, $b);
+        $workflow->connect($b, $workflow->getOutput());
+
         $token = WorkflowCommon::createToken();
 
-        $a = $this->getMock('Vespolina\Workflow\Tasks\Automatic');
-        $a->expects($this->once())
-            ->method('accept');
+        $workflow->accept($token);
 
-        $this->assertTrue($workflow->accept($token));
-        $this->assertContains($token, $workflow->getTokens());
-
-        $this->getTokens()->shouldContainToken($token);
-        $this->getInput()->getTokens()->shouldContainToken($token);
+        $expected = array(
+            'Token accepted into workflow',
+            'Token accepted into workflow.input',
+            'Token accepted into Vespolina\Tests\Functional\AutoA',
+            'Token accepted into Vespolina\Workflow\Place',
+            'Token accepted into Vespolina\Tests\Functional\AutoB',
+            'Token accepted into workflow.output',
+        );
+        foreach ($expected as $logEntry) {
+            $this->assertTrue($handler->hasInfo($logEntry));
+        }
     }
+}
 
-    /**
-     * @param \Vespolina\Workflow\Token $token
-     */
-    function it_should_log_accept_token($logger, $token)
+class AutoA extends Automatic
+{
+    public function execute(TokenInterface $token)
     {
-        $this->accept($token);
-        $logger->info('Token accepted into workflow', array('token' => $token))->shouldHaveBeenCalled();
+        if ($token->getData('autoB')) {
+            return false;
+        }
+        $token->setData('autoA', true);
+
+        return true;
+    }
+}
+
+class AutoB extends Automatic
+{
+    public function execute(TokenInterface $token)
+    {
+        if (!$token->getData('autoA')) {
+            return false;
+        }
+        $token->setData('autoB', true);
+
+        return true;
     }
 }

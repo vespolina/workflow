@@ -36,7 +36,8 @@ class TokenableTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($tokenable->accept($token));
         $this->assertContains($token, $tokenable->getTokens());
-        $this->assertTrue($handler->hasInfo('Token accepted into '));
+        $expected = 'Token accepted into ' . get_class($tokenable);
+        $this->assertTrue($handler->hasInfo($expected));
 
         $this->assertSame($tokenable, $token->getLocation(), 'the location of the token should be updated');
     }

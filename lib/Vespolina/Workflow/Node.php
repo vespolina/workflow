@@ -25,6 +25,10 @@ class Node implements NodeInterface
      */
     public function getName()
     {
+        if (!$this->name) {
+            return get_class($this);
+        }
+
         return $this->name;
     }
 

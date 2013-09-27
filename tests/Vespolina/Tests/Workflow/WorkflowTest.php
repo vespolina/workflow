@@ -8,6 +8,24 @@ use Vespolina\Tests\WorkflowCommon;
 
 class WorkflowTest extends \PHPUnit_Framework_TestCase
 {
+    public function testAccept()
+    {
+        $logger = $this->getMock('Monolog\Logger', array('info'), array('test'));
+        $logger->expects($this->once())
+            ->method('info');
+        $workflow = WorkflowCommon::createWorkflow($logger);
+        $input = $this->getMock('Vespolina\Workflow\Place', array('accept'));
+        $input->expects($this->once())
+            ->method('accept')
+            ->will($this->returnValue(true));
+        $rp = new \ReflectionProperty($workflow, 'input');
+        $rp->setAccessible(true);
+        $rp->setValue($workflow, $input);
+        $token = WorkflowCommon::createToken();
+        $workflow->accept($token);
+        $this->assertContain($token, $workflow->getTokens(), '');
+    }
+
     public function testAddArcNode()
     {
         $workflow = WorkflowCommon::createWorkflow();

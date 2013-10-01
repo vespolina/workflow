@@ -47,11 +47,12 @@ $workflow = new Workflow($logger)
 
 // create sequence
 $a = new Automatic();
-$workflow->connect($workflow->getInput(), $a);
-$p = new Place();
-$p = $p->setWorkflow($workflow, $logger);
-$workflow->connect($a, $p);
 $b = new Automatic();
+$p = new Place();
+$p->setWorkflow($workflow, $logger);
+
+$workflow->connect($workflow->getInput(), $a);
+$workflow->connect($a, $p);
 $workflow->connect($p, $b);
 $workflow->connect($b, $workflow->getOutput());
 

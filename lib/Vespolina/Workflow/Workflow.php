@@ -16,10 +16,10 @@ class Workflow
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
-        $this->input =  new Place();
+        $this->input = new Place();
         $this->input->setName('workflow.input');
         $this->addNode($this->input);
-        $this->output =  new Place();
+        $this->output = new Place();
         $this->output->setName('workflow.output');
         $this->addNode($this->output);
     }
@@ -28,7 +28,7 @@ class Workflow
      * Accept the token workflow which initializes the workflow
      *
      * @param TokenInterface $token
-     * @return bool
+     * @return boolean
      */
     public function accept(TokenInterface $token)
     {
@@ -144,7 +144,7 @@ class Workflow
         return $success;
     }
 
-    public function traverseNext($node)
+    public function traverseNext(TokenableInterface $node)
     {
         $this->logger->info(sprintf('Node %s reached, step %s', $node->getName(), $this->currentValidationStep()), array('node' => $node));
 

@@ -13,7 +13,7 @@ class Token implements TokenInterface
      *
      * @param string $key
      * @param mixed $data
-     * @return $this
+     * @return self
      */
     public function setData($key, $data)
     {
@@ -25,6 +25,7 @@ class Token implements TokenInterface
     /**
      * Return the data
      *
+     * @param $key
      * @return mixed
      */
     public function getData($key)
@@ -40,6 +41,7 @@ class Token implements TokenInterface
      * Set the location
      *
      * @param NodeInterface $location
+     * @return self
      */
     public function setLocation(NodeInterface $location)
     {
@@ -62,6 +64,7 @@ class Token implements TokenInterface
      * Set the object
      *
      * @param mixed $object
+     * @return self
      */
     public function setObject($object)
     {

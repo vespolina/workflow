@@ -12,7 +12,7 @@ abstract class Tokenable extends Node implements TokenableInterface
      * Accept the token into the node
      *
      * @param TokenInterface $token
-     * @return bool
+     * @return boolean
      */
     public function accept(TokenInterface $token)
     {
@@ -127,6 +127,7 @@ abstract class Tokenable extends Node implements TokenableInterface
      * Remove a token from the collection of tokens
      *
      * @param TokenInterface $token
+     * @return boolean
      */
     protected function removeToken(TokenInterface $token)
     {

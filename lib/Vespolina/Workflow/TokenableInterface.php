@@ -8,7 +8,7 @@ interface TokenableInterface extends NodeInterface
      * Accept the token into the node
      *
      * @param TokenInterface $token
-     * @return bool
+     * @return boolean
      */
     function accept(TokenInterface $token);
 

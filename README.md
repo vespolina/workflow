@@ -30,10 +30,10 @@ Suppose we want a workflow like this:
   O -> [A] -> O -> [B] -> O
  in          p1          out
 
- ```
+```
 
- The code that implements and runs down on it would look like:
- ```php
+The code that implements and runs down on it would look like:
+```php
  <?php
 
 use Vespolina\Workflow\Task\Automatic;
@@ -43,7 +43,7 @@ use Vespolina\Workflow\Token;
 use Monolog\Logger;
 
 $logger = new Logger('test');
-$workflow = new Workflow($logger)
+$workflow = new Workflow($logger);
 
 // create sequence
 $a = new Automatic();

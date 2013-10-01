@@ -8,6 +8,7 @@ interface TokenInterface
      * Set the location
      *
      * @param NodeInterface $location
+     * @return self
      */
     public function setLocation(NodeInterface $location);
 
@@ -22,6 +23,7 @@ interface TokenInterface
      * Set the object
      *
      * @param mixed $object
+     * @return self
      */
     function setObject($object);
 

@@ -5,7 +5,7 @@ namespace spec\Vespolina\Workflow;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-class TransactionSpec
+class TransactionSpec extends ObjectBehavior
 {
     /**
      * @param \Vespolina\Workflow\Workflow $workflow
@@ -14,7 +14,7 @@ class TransactionSpec
      */
     function let($workflow, $logger, $token)
     {
-        $this->setWorkflow($workflow, $logger);
+        $this->setWorkflow($workflow, $logger, $token);
     }
 
     function it_is_initializable()

@@ -2,7 +2,6 @@
 
 namespace Vespolina\Tests;
 
-use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Vespolina\Workflow\Arc;
 use Vespolina\Workflow\Place;
@@ -10,10 +9,6 @@ use Vespolina\Workflow\Token;
 use Vespolina\Workflow\Transaction;
 use Vespolina\Workflow\Workflow;
 
-/**
- * Class WorkflowTestsCommon
- * @package Vespolina\Tests
- */
 class WorkflowCommon
 {
     public static function createArc()

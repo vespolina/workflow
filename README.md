@@ -63,8 +63,8 @@ And we will see the traversing in our logs:
 ```cli
 Token accepted into workflow
 Token accepted into workflow.input
-Token accepted into Vespolina\Tests\Functional\AutoA
+Token accepted into Vespolina\Workflow\Task\Automatic
 Token accepted into Vespolina\Workflow\Place
-Token accepted into Vespolina\Tests\Functional\AutoB
+Token accepted into Vespolina\Workflow\Task\Automatic
 Token accepted into workflow.output
 ```

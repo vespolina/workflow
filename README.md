@@ -36,16 +36,22 @@ Suppose we want a workflow like this:
  ```php
  <?php
 
+use Vespolina\Workflow\Task\Automatic;
+use Vespolina\Workflow\Place;
+use Vespolina\Workflow\Workflow;
+use Vespolina\Workflow\Token;
+use Monolog\Logger;
+
 $logger = new Logger('test');
 $workflow = new Workflow($logger)
 
 // create sequence
-$a = new AAutomaticTransaction();
+$a = new Automatic();
 $workflow->connect($workflow->getInput(), $a);
 $p = new Place();
 $p = $p->setWorkflow($workflow, $logger);
 $workflow->connect($a, $p);
-$b = new BAutomaticTransaction();
+$b = new Automatic();
 $workflow->connect($p, $b);
 $workflow->connect($b, $workflow->getOutput());
 

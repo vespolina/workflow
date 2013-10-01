@@ -11,7 +11,7 @@ interface NodeInterface
      *
      * @param string $name
      *
-     * @return $this
+     * @return self
      */
     function setName($name);
 
@@ -28,7 +28,7 @@ interface NodeInterface
      * @param Workflow $workflow
      * @param LoggerInterface $logger
      *
-     * @return $this
+     * @return self
      */
     function setWorkflow(Workflow $workflow, LoggerInterface $logger);
 }

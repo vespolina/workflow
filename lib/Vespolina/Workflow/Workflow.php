@@ -4,11 +4,6 @@ namespace Vespolina\Workflow;
 
 use Psr\Log\LoggerInterface;
 
-
-/**
- * Class Workflow
- * @package Vespolina\Workflow
- */
 class Workflow
 {
     protected $arcs;
@@ -189,5 +184,4 @@ class Workflow
 
         return $step;
     }
-
 }

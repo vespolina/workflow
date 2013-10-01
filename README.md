@@ -49,7 +49,6 @@ $workflow = new Workflow($logger)
 $a = new Automatic();
 $b = new Automatic();
 $p = new Place();
-$p->setWorkflow($workflow, $logger);
 
 $workflow->connect($workflow->getInput(), $a);
 $workflow->connect($a, $p);

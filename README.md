@@ -26,32 +26,35 @@ Usage
 
 Suppose we want a workflow like this:
 ```
-  /**
-   *  O -> [A] -> O -> [B] -> O
-   * in          p1          out
-   */
+
+  O -> [A] -> O -> [B] -> O
+ in          p1          out
+
  ```
 
  The code that implements and runs down on it would look like:
- ```
-        $logger = new Logger('test');
-        $workflow = new Workflow($logger)
+ ```php
+ <?php
 
-        // create sequence
-        $a = new AAutomaticTransaction();
-        $workflow->connect($workflow->getInput(), $a);
-        $p = new Place();
-        $p = $p->setWorkflow($workflow, $logger);
-        $workflow->connect($a, $p);
-        $b = new BAutomaticTransaction();
-        $workflow->connect($p, $b);
-        $workflow->connect($b, $workflow->getOutput());
+$logger = new Logger('test');
+$workflow = new Workflow($logger)
 
-        $workflow->accept(new Token());
+// create sequence
+$a = new AAutomaticTransaction();
+$workflow->connect($workflow->getInput(), $a);
+$p = new Place();
+$p = $p->setWorkflow($workflow, $logger);
+$workflow->connect($a, $p);
+$b = new BAutomaticTransaction();
+$workflow->connect($p, $b);
+$workflow->connect($b, $workflow->getOutput());
+
+$workflow->accept(new Token());
 ```
 
 And we will see the traversing in our logs:
-```
+
+```cli
 Token accepted into workflow
 Token accepted into workflow.input
 Token accepted into Vespolina\Tests\Functional\AutoA

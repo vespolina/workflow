@@ -9,10 +9,7 @@ abstract class Tokenable extends Node implements TokenableInterface
     protected $tokens;
 
     /**
-     * Accept the token into the node
-     *
-     * @param TokenInterface $token
-     * @return boolean
+     * {@inheritdoc}
      */
     public function accept(TokenInterface $token)
     {
@@ -29,15 +26,16 @@ abstract class Tokenable extends Node implements TokenableInterface
         return true;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function execute(TokenInterface $token)
     {
         throw new \Exception('The execute method needs to be implement in your class');
     }
 
     /**
-     * Add an incoming arc
-     *
-     * @param Arc $arc
+     * {@inheritdoc}
      */
     public function addInput(Arc $arc)
     {
@@ -45,9 +43,7 @@ abstract class Tokenable extends Node implements TokenableInterface
     }
 
     /**
-     * Return incoming arcs
-     *
-     * @return array of Arc
+     * {@inheritdoc}
      */
     public function getInputs()
     {
@@ -55,9 +51,7 @@ abstract class Tokenable extends Node implements TokenableInterface
     }
 
     /**
-     * Add an outgoing arc
-     *
-     * @param Arc $arc
+     * {@inheritdoc}
      */
     public function addOutput(Arc $arc)
     {
@@ -65,9 +59,7 @@ abstract class Tokenable extends Node implements TokenableInterface
     }
 
     /**
-     * Return outgoing arcs
-     *
-     * @return array of Arc
+     * {@inheritdoc}
      */
     public function getOutputs()
     {
@@ -75,9 +67,7 @@ abstract class Tokenable extends Node implements TokenableInterface
     }
 
     /**
-     * Return the tokens
-     *
-     * @return array of \Vespolina\Workflow\TokenInterface
+     * {@inheritdoc}
      */
     public function getTokens()
     {

@@ -7,21 +7,21 @@ use Psr\Log\LoggerInterface;
 class Workflow
 {
     protected $arcs;
-    protected $input;
+    protected $start;
     protected $logger;
     protected $nodes;
-    protected $output;
+    protected $finish;
     protected $tokens;
 
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
-        $this->input = new Place();
-        $this->input->setName('workflow.input');
-        $this->addNode($this->input);
-        $this->output = new Place();
-        $this->output->setName('workflow.output');
-        $this->addNode($this->output);
+        $this->start = new Place();
+        $this->start->setName('workflow.start');
+        $this->addNode($this->start);
+        $this->finish = new Place();
+        $this->finish->setName('workflow.finish');
+        $this->addNode($this->finish);
     }
 
     /**
@@ -34,7 +34,7 @@ class Workflow
     {
         $this->addToken($token);
         $this->logger->info('Token accepted into workflow', array('token' => $token));
-        if ($this->getInput()->accept($token)) {
+        if ($this->getStart()->accept($token)) {
             return true;
         }
 
@@ -79,9 +79,9 @@ class Workflow
         return $arc;
     }
 
-    public function getInput()
+    public function getStart()
     {
-        return $this->input;
+        return $this->start;
     }
 
     public function addNode(NodeInterface $node)
@@ -99,9 +99,9 @@ class Workflow
         return $this->nodes;
     }
 
-    public function getOutput()
+    public function getFinish()
     {
-        return $this->output;
+        return $this->finish;
     }
 
     public function addToken(TokenInterface $token)
@@ -138,7 +138,7 @@ class Workflow
     public function validateWorkflow()
     {
         $this->currentValidationStep('reset');
-        $startingNode = $this->getInput();
+        $startingNode = $this->getStart();
         $success = $this->traverseNext($startingNode);
 
         return $success;
@@ -148,7 +148,7 @@ class Workflow
     {
         $this->logger->info(sprintf('Node %s reached, step %s', $node->getName(), $this->currentValidationStep()), array('node' => $node));
 
-        if ($node == $this->getOutput()) {
+        if ($node == $this->getFinish()) {
             return true;
         }
         if (!$arcs = $node->getOutputs()) {

@@ -23,8 +23,8 @@ class WorkflowSpec extends ObjectBehavior
         $this->shouldHaveType('Vespolina\Workflow\Workflow');
         $this->getNodes()->shouldHaveCount(2);
         $this->getNodes()->shouldBePlaces();
-        $this->getNodes()->shouldContainName('workflow.input');
-        $this->getNodes()->shouldContainName('workflow.output');
+        $this->getNodes()->shouldContainName('workflow.start');
+        $this->getNodes()->shouldContainName('workflow.finish');
     }
 
     /**

@@ -16,9 +16,9 @@ $a = new Automatic();
 $b = new Automatic();
 $p = new Place();
 
-$workflow->connect($workflow->getInput(), $a);
+$workflow->connect($workflow->getStart(), $a);
 $workflow->connect($a, $p);
 $workflow->connect($p, $b);
-$workflow->connect($b, $workflow->getOutput());
+$workflow->connect($b, $workflow->getFinish());
 
 $workflow->accept(new Token());

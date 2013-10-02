@@ -33,11 +33,14 @@ class WorkflowSpec extends ObjectBehavior
      */
     function it_should_create_an_arc($from, $to)
     {
-        $this->createArc($from, $to)->shouldReturnAnInstanceOf('Vespolina\Workflow\Arc');
+        $this->createArc($from, $to)
+            ->shouldReturnAnInstanceOf('Vespolina\Workflow\Arc')
+        ;
     }
 
     /**
      * @param \Vespolina\Workflow\Node $node
+     * @param \Monolog\Logger $logger
      */
     function it_should_add_a_node($node, $logger)
     {

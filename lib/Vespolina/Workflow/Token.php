@@ -25,6 +25,7 @@ class Token implements TokenInterface
     /**
      * Return the data
      *
+     * @param $key
      * @return mixed
      */
     public function getData($key)
@@ -37,9 +38,7 @@ class Token implements TokenInterface
     }
 
     /**
-     * Set the location
-     *
-     * @param NodeInterface $location
+     * {@inheritdoc}
      */
     public function setLocation(NodeInterface $location)
     {
@@ -49,9 +48,7 @@ class Token implements TokenInterface
     }
 
     /**
-     * Return the location
-     *
-     * @return NodeInterface
+     * {@inheritdoc}
      */
     public function getLocation()
     {
@@ -59,9 +56,7 @@ class Token implements TokenInterface
     }
 
     /**
-     * Set the object
-     *
-     * @param mixed $object
+     * {@inheritdoc}
      */
     public function setObject($object)
     {
@@ -71,9 +66,7 @@ class Token implements TokenInterface
     }
 
     /**
-     * Return the object
-     *
-     * @return mixed
+     * {@inheritdoc}
      */
     public function getObject()
     {

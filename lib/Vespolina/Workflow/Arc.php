@@ -8,6 +8,9 @@ class Arc extends Node implements ArcInterface
     protected $to;
     protected $token;
 
+    /**
+     * {@inheritdoc}
+     */
     public function accept(TokenInterface $token)
     {
         try {
@@ -19,6 +22,9 @@ class Arc extends Node implements ArcInterface
         return true;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setFrom(TokenableInterface $tokenable)
     {
         if (isset($this->to)) {
@@ -41,6 +47,9 @@ class Arc extends Node implements ArcInterface
         return $this->from;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setTo(TokenableInterface $tokenable)
     {
         if (isset($this->from)) {

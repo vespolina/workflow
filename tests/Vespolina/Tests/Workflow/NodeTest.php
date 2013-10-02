@@ -17,11 +17,11 @@ class NodeTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('test node', $node->getName(), 'the set name should be returned');
     }
 
-    public function setSetWorkflow()
+    public function testSetWorkflow()
     {
         $logger = new Logger('test');
         $workflow = WorkflowCommon::createWorkflow($logger);
-        $node = $this->getMock('Vespolina\Workflow\Node');
+        $node = new TestNode();
         $this->assertSame($node, $node->setWorkflow($workflow, $logger));
     }
 }

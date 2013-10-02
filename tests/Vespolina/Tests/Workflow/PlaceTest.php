@@ -2,7 +2,6 @@
 
 namespace Vespolina\Tests\Workflow;
 
-use Monolog\Logger;
 use Vespolina\Tests\WorkflowCommon;
 
 class PlaceTest extends \PHPUnit_Framework_TestCase

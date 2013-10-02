@@ -4,9 +4,8 @@ namespace spec\Vespolina\Workflow;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Vespolina\Workflow\Arc;
 
-class PlaceSpec
+class PlaceSpec extends ObjectBehavior
 {
     /**
      * @param \Vespolina\Workflow\Workflow $workflow

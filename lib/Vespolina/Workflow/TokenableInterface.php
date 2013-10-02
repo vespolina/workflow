@@ -8,13 +8,13 @@ interface TokenableInterface extends NodeInterface
      * Accept the token into the node
      *
      * @param TokenInterface $token
-     * @return bool
+     * @return boolean
      */
     function accept(TokenInterface $token);
 
     /**
-     * The executable functionality. This needs to be implements for custom places and transactions
-     * This method should not be called directly, but triggered calling the accept() method
+     * The executable functionality. This needs to be implemented for custom places and transactions.
+     * This method should not be called directly, but triggered by calling the accept() method
      *
      * @param TokenInterface $token
      * @return mixed
@@ -31,7 +31,7 @@ interface TokenableInterface extends NodeInterface
     /**
      * Return incoming arcs
      *
-     * @return array of Arc
+     * @return Arc[]
      */
     function getInputs();
 
@@ -45,14 +45,14 @@ interface TokenableInterface extends NodeInterface
     /**
      * Return outgoing arcs
      *
-     * @return array of Arc
+     * @return Arc[]
      */
     function getOutputs();
 
     /**
      * Return the tokens
      *
-     * @return array of \Vespolina\Workflow\TokenInterface
+     * @return \Vespolina\Workflow\TokenInterface[]
      */
     function getTokens();
 }

@@ -23,7 +23,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $rp->setValue($workflow, $input);
         $token = WorkflowCommon::createToken();
         $workflow->accept($token);
-        $this->assertContain($token, $workflow->getTokens(), '');
+        $this->assertContains($token, $workflow->getTokens(), '');
     }
 
     public function testAddArcNode()

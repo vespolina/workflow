@@ -50,10 +50,10 @@ $a = new Automatic();
 $b = new Automatic();
 $p = new Place();
 
-$workflow->connect($workflow->getInput(), $a);
+$workflow->connect($workflow->getStart(), $a);
 $workflow->connect($a, $p);
 $workflow->connect($p, $b);
-$workflow->connect($b, $workflow->getOutput());
+$workflow->connect($b, $workflow->getFinish());
 
 $workflow->accept(new Token());
 ```
@@ -62,9 +62,9 @@ And we will see the traversing in our logs:
 
 ```cli
 ... test.INFO: Token accepted into workflow
-... test.INFO: Token accepted into workflow.input
+... test.INFO: Token accepted into workflow.start
 ... test.INFO: Token accepted into Vespolina\Workflow\Task\Automatic
 ... test.INFO: Token accepted into Vespolina\Workflow\Place
 ... test.INFO: Token accepted into Vespolina\Workflow\Task\Automatic
-... test.INFO: Token accepted into workflow.output
+... test.INFO: Token accepted into workflow.finish
 ```

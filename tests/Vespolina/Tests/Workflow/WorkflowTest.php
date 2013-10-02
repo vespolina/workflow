@@ -18,7 +18,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $input->expects($this->once())
             ->method('accept')
             ->will($this->returnValue(true));
-        $rp = new \ReflectionProperty($workflow, 'input');
+        $rp = new \ReflectionProperty($workflow, 'start');
         $rp->setAccessible(true);
         $rp->setValue($workflow, $input);
         $token = WorkflowCommon::createToken();
@@ -56,7 +56,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $logger->pushHandler($handler);
         $workflow = WorkflowCommon::createWorkflow($logger);
         $this->assertFalse($workflow->validateWorkflow(), 'this should fail');
-        $this->assertTrue($handler->hasDebug('Missing output arc for workflow.input'));
+        $this->assertTrue($handler->hasDebug('Missing output arc for workflow.start'));
     }
 
     public function testValidateWorkflowConnectedArcs()
@@ -67,10 +67,10 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $workflow = WorkflowCommon::createWorkflow($logger);
         $arc = WorkflowCommon::createArc();
         $arc->setName('a1');
-        $arc->setFrom($workflow->getInput());
+        $arc->setFrom($workflow->getStart());
 
         $this->assertFalse($workflow->validateWorkflow(), 'this should fail');
-        $this->assertTrue($handler->hasDebug('Broken arc a1 from workflow.input'));
+        $this->assertTrue($handler->hasDebug('Broken arc a1 from workflow.start'));
     }
 
     public function testValidateWorkflowSimple()
@@ -84,21 +84,21 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $transaction->setName('transaction');
         $a1 = WorkflowCommon::createArc();
         $a1->setName('a1');
-        $a1->setFrom($workflow->getInput());
+        $a1->setFrom($workflow->getStart());
         $a1->setTo($transaction);
         $a2 = WorkflowCommon::createArc();
         $a2->setName('a2');
         $a2->setFrom($transaction);
-        $a2->setTo($workflow->getOutput());
+        $a2->setTo($workflow->getFinish());
 
         $this->assertTrue($workflow->validateWorkflow());
 
         $expected = array(
-            'Node workflow.input reached, step 1',
+            'Node workflow.start reached, step 1',
             'Traversing arc a1, step 2',
             'Node transaction reached, step 3',
             'Traversing arc a2, step 4',
-            'Node workflow.output reached, step 5',
+            'Node workflow.finish reached, step 5',
         );
         foreach ($expected as $logEntry) {
             $this->assertTrue($handler->hasInfo($logEntry));

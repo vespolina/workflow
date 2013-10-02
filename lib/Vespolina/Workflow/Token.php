@@ -13,7 +13,7 @@ class Token implements TokenInterface
      *
      * @param string $key
      * @param mixed $data
-     * @return self
+     * @return $this
      */
     public function setData($key, $data)
     {

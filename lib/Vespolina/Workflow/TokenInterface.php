@@ -5,19 +5,36 @@ namespace Vespolina\Workflow;
 interface TokenInterface
 {
     /**
+     * Set the data
+     *
+     * @param string $key
+     * @param mixed $data
+     * @return $this
+     */
+    function setData($key, $data);
+
+    /**
+     * Return the data
+     *
+     * @param $key
+     * @return mixed
+     */
+    function getData($key);
+
+    /**
      * Set the location
      *
      * @param NodeInterface $location
      * @return $this
      */
-    public function setLocation(NodeInterface $location);
+    function setLocation(NodeInterface $location);
 
     /**
      * Return the location
      *
      * @return NodeInterface
      */
-    public function getLocation();
+    function getLocation();
 
     /**
      * Set the object

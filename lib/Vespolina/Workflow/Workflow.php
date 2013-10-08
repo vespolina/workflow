@@ -69,6 +69,24 @@ class Workflow
         return $this->createArc($from, $to);
     }
 
+    public function connectToStart(TransactionInterface $tokenable)
+    {
+        if (!in_array($tokenable, $this->nodes)) {
+            $this->addNode($tokenable);
+        }
+
+        return $this->createArc($this->start, $tokenable);
+    }
+
+    public function connectToFinish(TransactionInterface $tokenable)
+    {
+        if (!in_array($tokenable, $this->nodes)) {
+            $this->addNode($tokenable);
+        }
+
+        return $this->createArc($tokenable, $this->finish);
+    }
+
     public function createArc(TokenableInterface $from, TokenableInterface $to)
     {
         $arc = new Arc();

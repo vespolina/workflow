@@ -7,10 +7,11 @@ use Psr\Log\LoggerInterface;
 class Workflow
 {
     protected $arcs;
-    protected $start;
+    protected $errors;
+    protected $finish;
     protected $logger;
     protected $nodes;
-    protected $finish;
+    protected $start;
     protected $tokens;
 
     public function __construct(LoggerInterface $logger)
@@ -97,6 +98,16 @@ class Workflow
         return $arc;
     }
 
+    public function createToken(array $data = array())
+    {
+        $token = new Token();
+
+        foreach ($data as $key => $value) {
+            $token->setData($key, $value);
+        }
+        return $token;
+    }
+
     public function getStart()
     {
         return $this->start;
@@ -120,6 +131,16 @@ class Workflow
     public function getFinish()
     {
         return $this->finish;
+    }
+
+    public function addError($error)
+    {
+        $this->errors[] = $error;
+    }
+
+    public function getErrors()
+    {
+        return $this->errors;
     }
 
     public function addToken(TokenInterface $token)

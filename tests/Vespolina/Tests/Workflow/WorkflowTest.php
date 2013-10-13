@@ -34,6 +34,23 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $this->assertContains($arc, $workflow->getArcs());
     }
 
+    public function testCreateToken()
+    {
+        $workflow = WorkflowCommon::createWorkflow();
+        $this->assertInstanceof('Vespolina\Workflow\TokenInterface', $workflow->createToken(), 'an instance of TokenInterface should be create');
+
+
+        $string = 'string';
+        $object = new \stdClass();
+        $data = [
+            'string' => $string,
+            'object' => $object,
+        ];
+        $token = $workflow->createToken($data);
+        $this->assertSame($string, $token->getData('string'), 'the string should be returned');
+        $this->assertSame($object, $token->getData('object'), 'the object should be returned');
+    }
+
     public function testRemoveToken()
     {
         $workflow = WorkflowCommon::createWorkflow();

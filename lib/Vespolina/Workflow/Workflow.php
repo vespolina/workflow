@@ -97,6 +97,16 @@ class Workflow
         return $arc;
     }
 
+    public function createToken(array $data = array())
+    {
+        $token = new Token();
+
+        foreach ($data as $key => $value) {
+            $token->setData($key, $value);
+        }
+        return $token;
+    }
+
     public function getStart()
     {
         return $this->start;

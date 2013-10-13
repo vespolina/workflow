@@ -91,24 +91,25 @@ abstract class Tokenable extends Node implements TokenableInterface
 
     protected function finalize(TokenInterface $token)
     {
-        $outputs = $this->getOutputs();
+        $this->removeToken($token);
+        if (!$outputs = $this->getOutputs()) {
+            return true;
+        }
         // single out, no token clone, just update the node location
         if (sizeof($outputs) == 1) {
             $output = array_shift($outputs);
             $output->accept($token);
-            $this->removeToken($token);
 
             return true;
         }
 
         // multiple outs, clone for each path, remove original token
-        foreach ($this->getOutputs() as $output) {
+        foreach ($outputs as $output) {
             $newToken = clone $token;
             $this->workflow->addToken($newToken);
             $output->accept($newToken);
         }
         $this->workflow->removeToken($token);
-        $this->removeToken($token);
 
         return true;
     }

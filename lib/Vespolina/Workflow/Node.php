@@ -8,6 +8,7 @@ class Node implements NodeInterface
 {
     protected $logger;
     protected $name;
+    /** @var  \Vespolina\Workflow\Workflow */
     protected $workflow;
 
     /**

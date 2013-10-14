@@ -2,6 +2,8 @@
 
 namespace Vespolina\Workflow;
 
+use Vespolina\Workflow\Exception\ProcessingFailureException;
+
 abstract class Tokenable extends Node implements TokenableInterface
 {
     protected $inputs;
@@ -15,13 +17,21 @@ abstract class Tokenable extends Node implements TokenableInterface
     {
         $message = 'Token accepted into ' . $this->getName();
         $this->logger->info($message, array('token' => $token));
-
         $this->tokens[] = $token;
         $token->setLocation($this);
-        $this->preExecute($token);
-        $this->execute($token);
-        $this->postExecute($token);
-        $this->cleanUp($token);
+
+        try {
+            $this->preExecute($token);
+            $this->execute($token);
+            $this->postExecute($token);
+            $this->cleanUp($token);
+        } catch (\Exception $e) {
+            if ($e instanceof ProcessingFailureException) {
+                $this->workflow->addError($e->getMessage());
+            }
+
+            return false;
+        }
 
         return true;
     }

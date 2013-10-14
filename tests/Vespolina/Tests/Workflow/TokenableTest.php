@@ -5,6 +5,7 @@ namespace Vespolina\Tests\Workflow;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Vespolina\Tests\WorkflowCommon;
+use Vespolina\Workflow\Exception\ProcessingFailureException;
 use Vespolina\Workflow\Tokenable;
 use Vespolina\Workflow\TokenInterface;
 
@@ -40,6 +41,29 @@ class TokenableTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($handler->hasInfo($expected));
 
         $this->assertSame($tokenable, $token->getLocation(), 'the location of the token should be updated');
+    }
+
+    public function testProcessExceptionHandling()
+    {
+        $handler = new TestHandler();
+        $logger = new Logger('test', array($handler));
+        $workflow = WorkflowCommon::createWorkflow($logger);
+        $token = WorkflowCommon::createToken();
+        $tokenable = $this->getMock('Vespolina\Workflow\Tokenable',
+            array('preExecute')
+        );
+        $tokenable->setWorkflow($workflow, $logger);
+        $inArc = WorkflowCommon::createArc();
+        $inArc->setTo($tokenable);
+        $otherArc = WorkflowCommon::createArc();
+        $otherArc->setTo($tokenable);
+
+        $tokenable->expects($this->once())
+            ->method('preExecute')
+            ->will($this->throwException(new ProcessingFailureException('testing')))
+        ;
+        $this->assertFalse($tokenable->accept($token), 'a failure should return false');
+        $this->assertContains('testing', $workflow->getErrors(), 'the error message from the failure should be in workflow');
     }
 
     public function testAddInput()

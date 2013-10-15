@@ -9,6 +9,6 @@ class Automatic extends Transaction
 {
     protected function cleanUp(TokenInterface $token)
     {
-        $this->finalize($token);
+        return $this->finalize($token);
     }
 }

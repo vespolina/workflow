@@ -14,12 +14,10 @@ class Arc extends Node implements ArcInterface
     public function accept(TokenInterface $token)
     {
         try {
-            $this->to->accept($token);
+            return $this->to->accept($token);
         } catch (\Exception $e) {
             return false;
         }
-
-        return true;
     }
 
     /**

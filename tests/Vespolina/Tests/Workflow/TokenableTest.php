@@ -27,13 +27,17 @@ class TokenableTest extends \PHPUnit_Framework_TestCase
         $otherArc->setTo($tokenable);
 
         $tokenable->expects($this->once())
-            ->method('preExecute');
+            ->method('preExecute')
+            ->will($this->returnValue(true));
         $tokenable->expects($this->once())
-            ->method('execute');
+            ->method('execute')
+            ->will($this->returnValue(true));
         $tokenable->expects($this->once())
-            ->method('postExecute');
+            ->method('postExecute')
+            ->will($this->returnValue(true));
         $tokenable->expects($this->once())
-            ->method('cleanUp');
+            ->method('cleanUp')
+            ->will($this->returnValue(true));
 
         $this->assertTrue($tokenable->accept($token));
         $this->assertContains($token, $tokenable->getTokens());

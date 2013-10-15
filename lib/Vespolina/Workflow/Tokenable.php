@@ -20,11 +20,12 @@ abstract class Tokenable extends Node implements TokenableInterface
         $this->tokens[] = $token;
         $token->setLocation($this);
 
+        $success = true;
         try {
-            $this->preExecute($token);
-            $this->execute($token);
-            $this->postExecute($token);
-            $this->cleanUp($token);
+            $success = $success && $this->preExecute($token);
+            $success = $success && $this->execute($token);
+            $success = $success && $this->postExecute($token);
+            $success = $success && $this->cleanUp($token);
         } catch (\Exception $e) {
             if ($e instanceof ProcessingFailureException) {
                 $this->workflow->addError($e->getMessage());
@@ -33,7 +34,7 @@ abstract class Tokenable extends Node implements TokenableInterface
             return false;
         }
 
-        return true;
+        return $success;
     }
 
     /**
@@ -86,17 +87,17 @@ abstract class Tokenable extends Node implements TokenableInterface
 
     protected function cleanUp(TokenInterface $token)
     {
-
+        return true;
     }
 
     protected function postExecute(TokenInterface $token)
     {
-
+        return true;
     }
 
     protected function preExecute(TokenInterface $token)
     {
-
+        return true;
     }
 
     protected function finalize(TokenInterface $token)
@@ -108,20 +109,19 @@ abstract class Tokenable extends Node implements TokenableInterface
         // single out, no token clone, just update the node location
         if (sizeof($outputs) == 1) {
             $output = array_shift($outputs);
-            $output->accept($token);
-
-            return true;
+            return $output->accept($token);
         }
 
         // multiple outs, clone for each path, remove original token
+        $success = true;
         foreach ($outputs as $output) {
             $newToken = clone $token;
             $this->workflow->addToken($newToken);
-            $output->accept($newToken);
+            $success = $success && $output->accept($newToken);
         }
         $this->workflow->removeToken($token);
 
-        return true;
+        return $success;
     }
 
     /**

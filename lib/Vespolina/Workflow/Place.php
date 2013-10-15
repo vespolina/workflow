@@ -12,11 +12,9 @@ class Place extends Tokenable implements PlaceInterface
     public function execute(TokenInterface $token)
     {
         try {
-            $this->finalize($token);
+            return $this->finalize($token);
         } catch (\Exception $e) {
             return false;
         }
-
-        return true;
     }
 }

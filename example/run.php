@@ -25,4 +25,4 @@ $workflow->connect($b, $workflow->getFinish());
 $workflow->accept(new Token());
 
 $dumper = new GraphvizDumper($workflow);
-$dumper->dump();
+echo $dumper->dump();

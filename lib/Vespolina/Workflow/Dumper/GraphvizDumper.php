@@ -22,9 +22,6 @@ class GraphvizDumper
         'graph' => array('ratio' => 'compress'),
         'node'  => array('fontsize' => 11, 'fontname' => 'Arial', 'shape' => 'record'),
         'edge'  => array('fontsize' => 9, 'fontname' => 'Arial', 'color' => 'grey', 'arrowhead' => 'open', 'arrowsize' => 0.5),
-        'node.instance' => array('fillcolor' => '#9999ff', 'style' => 'filled'),
-        'node.definition' => array('fillcolor' => '#eeeeee'),
-        'node.missing' => array('fillcolor' => '#ff9999', 'style' => 'filled'),
     );
 
     public function __construct(Workflow $workflow)
@@ -40,9 +37,6 @@ class GraphvizDumper
      *  * graph: The default options for the whole graph
      *  * node: The default options for nodes
      *  * edge: The default options for edges
-     *  * node.instance: The default options for services that are defined directly by object instances
-     *  * node.definition: The default options for services that are defined via service definition instances
-     *  * node.missing: The default options for missing services
      *
      * @param array $options An array of options
      *
@@ -50,7 +44,7 @@ class GraphvizDumper
      */
     public function dump(array $options = array())
     {
-        foreach (array('graph', 'node', 'edge', 'node.instance', 'node.definition', 'node.missing') as $key) {
+        foreach (array('graph', 'node', 'edge') as $key) {
             if (isset($options[$key])) {
                 $this->options[$key] = array_merge($this->options[$key], $options[$key]);
             }
@@ -72,9 +66,13 @@ class GraphvizDumper
     {
         $code = '';
         foreach ($this->nodes as $id => $node) {
-            $aliases = $this->getAliases($id);
-
-            $code .= sprintf("  node_%s [label=\"%s\\n%s\\n\", shape=%s%s];\n", $this->dotize($id), $id.($aliases ? ' ('.implode(', ', $aliases).')' : ''), $node['class'], $this->options['node']['shape'], $this->addAttributes($node['attributes']));
+            $code .= sprintf("  node_%s [label=\"%s\\n%s\\n\", shape=%s%s];\n",
+                $this->dotize($id),
+                $id,
+                $node['class'],
+                $this->options['node']['shape'],
+                $this->addAttributes($node['attributes'])
+            );
         }
 
         return $code;
@@ -90,7 +88,12 @@ class GraphvizDumper
         $code = '';
         foreach ($this->edges as $id => $edges) {
             foreach ($edges as $edge) {
-                $code .= sprintf("  node_%s -> node_%s [label=\"%s\" style=\"%s\"];\n", $this->dotize($id), $this->dotize($edge['to']), $edge['name'], $edge['required'] ? 'filled' : 'dashed');
+                $code .= sprintf("  node_%s -> node_%s [label=\"%s\" style=\"%s\"];\n",
+                    $this->dotize($id),
+                    $this->dotize($edge['to']),
+                    $edge['name'],
+                    $edge['required'] ? 'filled' : 'dashed'
+                );
             }
         }
 
@@ -106,6 +109,12 @@ class GraphvizDumper
     {
         $edges = array();
 
+        foreach ($this->workflow->getArcs() as $arc) {
+            $edges[$arc->getName()] = array(
+
+            );
+        }
+
         return $edges;
     }
 
@@ -118,7 +127,17 @@ class GraphvizDumper
     {
         $nodes = array();
 
-        $this->workflow;
+        foreach ($this->workflow->getNodes() as $node) {
+            $condition = $node->getName() == get_class($node) ||
+                         $node->getName() == 'workflow.start' ||
+                         $node->getName() == 'workflow.finish';
+            $nodes[$node->getName()] = array(
+                'attributes' => array(
+                    'shape' => 'ellipse'
+                ),
+                'class' => $condition ? '' : $node->getName()
+            );
+        }
 
         return $nodes;
     }

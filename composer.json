@@ -16,7 +16,8 @@
     },
     "require-dev": {
         "phpspec/phpspec": "2.0.*@dev",
-        "monolog/monolog": "1.6.*"
+        "monolog/monolog": "1.6.*",
+        "raulfraile/ladybug": "~1.0"
     },
     "minimum-stability": "dev",
     "config": {

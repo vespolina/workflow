@@ -89,7 +89,7 @@ class GraphvizDumper
         foreach ($this->edges as $id => $edges) {
             foreach ($edges as $edge) {
                 $code .= sprintf("  node_%s -> node_%s [label=\"%s\" style=\"%s\"];\n",
-                    $this->dotize($id),
+                    $this->dotize($edge['from']),
                     $this->dotize($edge['to']),
                     $edge['name'],
                     $edge['required'] ? 'filled' : 'dashed'
@@ -111,7 +111,10 @@ class GraphvizDumper
 
         foreach ($this->workflow->getArcs() as $arc) {
             $edges[$arc->getName()] = array(
-
+                'name' => $arc->getName(),
+                'required' => true,
+                'to' => $arc->getTo(),
+                'from' => $arc->getFrom(),
             );
         }
 

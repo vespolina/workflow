@@ -87,14 +87,12 @@ class GraphvizDumper
     {
         $code = '';
         foreach ($this->edges as $id => $edges) {
-            foreach ($edges as $edge) {
-                $code .= sprintf("  node_%s -> node_%s [label=\"%s\" style=\"%s\"];\n",
-                    $this->dotize($edge['from']),
-                    $this->dotize($edge['to']),
-                    $edge['name'],
-                    $edge['required'] ? 'filled' : 'dashed'
-                );
-            }
+            $code .= sprintf("  node_%s -> node_%s [label=\"%s\" style=\"%s\"];\n",
+                $this->dotize($edges['from']->getName()),
+                $this->dotize($edges['to']->getName()),
+                $edges['name'],
+                $edges['required'] ? 'filled' : 'dashed'
+            );
         }
 
         return $code;

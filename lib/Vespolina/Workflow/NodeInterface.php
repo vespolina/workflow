@@ -14,6 +14,58 @@ use Psr\Log\LoggerInterface;
 interface NodeInterface
 {
     /**
+     * Accept the token into the node
+     *
+     * @param TokenInterface $token
+     * @return boolean
+     */
+    function accept(TokenInterface $token);
+
+    /**
+     * The executable functionality. This needs to be implemented for custom places and transactions.
+     * This method should not be called directly, but triggered by calling the accept() method
+     *
+     * @param TokenInterface $token
+     * @return mixed
+     */
+    function execute(TokenInterface $token);
+
+    /**
+     * Add an incoming arc
+     *
+     * @param Arc $arc
+     */
+    function addInput(Arc $arc);
+
+    /**
+     * Return incoming arcs
+     *
+     * @return Arc[]
+     */
+    function getInputs();
+
+    /**
+     * Add an outgoing arc
+     *
+     * @param Arc $arc
+     */
+    function addOutput(Arc $arc);
+
+    /**
+     * Return outgoing arcs
+     *
+     * @return Arc[]
+     */
+    function getOutputs();
+
+    /**
+     * Return the tokens
+     *
+     * @return \Vespolina\Workflow\TokenInterface[]
+     */
+    function getTokens();
+
+    /**
      * Set the name
      *
      * @param string $name

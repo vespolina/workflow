@@ -10,7 +10,7 @@
 namespace spec\Vespolina\Workflow;
 
 use PhpSpec\ObjectBehavior;
-use Vespolina\Workflow\TokenableInterface;
+use Vespolina\Workflow\NodeInterface;
 
 class ArcSpec extends ObjectBehavior
 {
@@ -32,13 +32,14 @@ class ArcSpec extends ObjectBehavior
         $this->shouldThrow(new \InvalidArgumentException('The "from" node should be an instance of Vespolina\Workflow\PlaceInterface'))->duringSetFrom($transaction);
     }
 
-    function it_should_add_self_to_tokenable_from(TokenableInterface $from)
+
+    function it_should_add_self_to_tokenable_from(NodeInterface $from)
     {
         $this->setFrom($from);
         $from->addOutput($this)->shouldHaveBeenCalled();
     }
 
-    function it_should_add_self_to_tokenable_to(TokenableInterface $to)
+    function it_should_add_self_to_tokenable_to(NodeInterface $to)
     {
         $this->setTo($to);
         $to->addInput($this)->shouldHaveBeenCalled();

@@ -59,7 +59,7 @@ class Workflow
         return $this->arcs;
     }
 
-    public function connect(TokenableInterface $from, TokenableInterface $to)
+    public function connect(NodeInterface $from, NodeInterface $to)
     {
         if ($from instanceof PlaceInterface && $to instanceof PlaceInterface) {
             throw new \InvalidArgumentException('You can only connect a Vespolina\Workflow\TransactionInterface to a Vespolina\Workflow\PlaceInterface');
@@ -95,7 +95,7 @@ class Workflow
         return $this->createArc($tokenable, $this->finish);
     }
 
-    public function createArc(TokenableInterface $from, TokenableInterface $to)
+    public function createArc(NodeInterface $from, NodeInterface $to)
     {
         $arc = new Arc();
         $arc->setFrom($from);
@@ -191,7 +191,7 @@ class Workflow
         return $success;
     }
 
-    public function traverseNext(TokenableInterface $node)
+    public function traverseNext(NodeInterface $node)
     {
         $this->logger->info(sprintf('Node %s reached, step %s', $node->getName(), $this->currentValidationStep()), array('node' => $node));
 

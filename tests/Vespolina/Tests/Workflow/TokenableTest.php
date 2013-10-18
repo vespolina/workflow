@@ -13,7 +13,7 @@ use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Vespolina\Tests\WorkflowCommon;
 use Vespolina\Workflow\Exception\ProcessingFailureException;
-use Vespolina\Workflow\Tokenable;
+use Vespolina\Workflow\Node;
 use Vespolina\Workflow\TokenInterface;
 
 class TokenableTest extends \PHPUnit_Framework_TestCase
@@ -24,7 +24,7 @@ class TokenableTest extends \PHPUnit_Framework_TestCase
         $logger = new Logger('test', array($handler));
         $workflow = WorkflowCommon::createWorkflow($logger);
         $token = WorkflowCommon::createToken();
-        $tokenable = $this->getMock('Vespolina\Workflow\Tokenable',
+        $tokenable = $this->getMock('Vespolina\Workflow\Node',
             array('preExecute', 'execute', 'postExecute', 'cleanUp')
         );
         $tokenable->setWorkflow($workflow, $logger);
@@ -60,7 +60,7 @@ class TokenableTest extends \PHPUnit_Framework_TestCase
         $logger = new Logger('test', array($handler));
         $workflow = WorkflowCommon::createWorkflow($logger);
         $token = WorkflowCommon::createToken();
-        $tokenable = $this->getMock('Vespolina\Workflow\Tokenable',
+        $tokenable = $this->getMock('Vespolina\Workflow\Node',
             array('preExecute')
         );
         $tokenable->setWorkflow($workflow, $logger);
@@ -79,7 +79,7 @@ class TokenableTest extends \PHPUnit_Framework_TestCase
 
     public function testAddInput()
     {
-        $tokenable = $this->getMockForAbstractClass('Vespolina\Workflow\Tokenable');
+        $tokenable = $this->getMockForAbstractClass('Vespolina\Workflow\Node');
         $arc = WorkflowCommon::createArc();
         $tokenable->addInput($arc);
         $this->assertContains($arc, $tokenable->getInputs());
@@ -87,7 +87,7 @@ class TokenableTest extends \PHPUnit_Framework_TestCase
 
     public function testAddOutput()
     {
-        $tokenable = $this->getMockForAbstractClass('Vespolina\Workflow\Tokenable');
+        $tokenable = $this->getMockForAbstractClass('Vespolina\Workflow\Node');
         $arc = WorkflowCommon::createArc();
         $tokenable->addOutput($arc);
         $this->assertContains($arc, $tokenable->getOutputs());
@@ -157,7 +157,7 @@ class TokenableTest extends \PHPUnit_Framework_TestCase
     }
 }
 
-class ExtendedTokenable extends Tokenable
+class ExtendedTokenable extends Node
 {
     public function setToken(TokenInterface $token)
     {

@@ -31,7 +31,7 @@ class Arc implements ArcInterface
     /**
      * {@inheritdoc}
      */
-    public function setFrom(TokenableInterface $tokenable)
+    public function setFrom(NodeInterface $tokenable)
     {
         if (isset($this->to)) {
             $expectedInterface = $this->getExpectedInterface($this->to);
@@ -56,7 +56,7 @@ class Arc implements ArcInterface
     /**
      * {@inheritdoc}
      */
-    public function setTo(TokenableInterface $tokenable)
+    public function setTo(NodeInterface $tokenable)
     {
         if (isset($this->from)) {
             $expectedInterface = $this->getExpectedInterface($this->from);
@@ -78,7 +78,7 @@ class Arc implements ArcInterface
         return $this->to;
     }
 
-    protected function getExpectedInterface(TokenableInterface $tokenable)
+    protected function getExpectedInterface(NodeInterface $tokenable)
     {
         if ($tokenable instanceof TransactionInterface) {
             return 'Vespolina\Workflow\PlaceInterface';

@@ -17,7 +17,6 @@ class ArcSpec extends ObjectBehavior
     function it_is_initializable()
     {
         $this->shouldHaveType('Vespolina\Workflow\Arc');
-        $this->shouldReturnAnInstanceOf('Vespolina\Workflow\Node');
     }
 
     /**

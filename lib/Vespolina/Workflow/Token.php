@@ -6,7 +6,6 @@ class Token implements TokenInterface
 {
     protected $data;
     protected $location;
-    protected $object;
 
     /**
      * Set the data
@@ -53,23 +52,5 @@ class Token implements TokenInterface
     public function getLocation()
     {
         return $this->location;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setObject($object)
-    {
-        $this->object = $object;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getObject()
-    {
-        return $this->object;
     }
 }

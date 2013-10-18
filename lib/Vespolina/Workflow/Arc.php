@@ -13,7 +13,6 @@ class Arc implements ArcInterface
 {
     protected $from;
     protected $to;
-    protected $token;
     protected $name;
 
     /**

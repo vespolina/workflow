@@ -100,7 +100,7 @@ class Workflow
         $arc = new Arc();
         $arc->setFrom($from);
         $arc->setTo($to);
-        $this->addNode($arc);
+        $this->addArc($arc);
 
         return $arc;
     }
@@ -124,10 +124,11 @@ class Workflow
     {
         $node->setWorkflow($this, $this->logger);
         $this->nodes[] = $node;
+    }
 
-        if ($node instanceof ArcInterface) {
-            $this->arcs[] = $node;
-        }
+    public function addArc($arc)
+    {
+        $this->arcs[] = $arc;
     }
 
     public function getNodes()

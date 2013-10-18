@@ -9,7 +9,7 @@
 
 namespace Vespolina\Workflow;
 
-interface ArcInterface extends NodeInterface
+interface ArcInterface
 {
     /**
      * @param TokenableInterface $tokenable

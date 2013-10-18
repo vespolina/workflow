@@ -9,11 +9,12 @@
 
 namespace Vespolina\Workflow;
 
-class Arc extends Node implements ArcInterface
+class Arc implements ArcInterface
 {
     protected $from;
     protected $to;
     protected $token;
+    protected $name;
 
     /**
      * {@inheritdoc}
@@ -84,5 +85,15 @@ class Arc extends Node implements ArcInterface
         }
 
         return 'Vespolina\Workflow\TransactionInterface';
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    public function getName()
+    {
+        return $this->name;
     }
 }

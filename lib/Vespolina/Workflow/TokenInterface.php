@@ -35,19 +35,4 @@ interface TokenInterface
      * @return NodeInterface
      */
     function getLocation();
-
-    /**
-     * Set the object
-     *
-     * @param mixed $object
-     * @return $this
-     */
-    function setObject($object);
-
-    /**
-     * Return the object
-     *
-     * @return mixed
-     */
-    function getObject();
 }

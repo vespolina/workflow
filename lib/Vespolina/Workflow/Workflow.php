@@ -42,11 +42,8 @@ class Workflow
     {
         $this->addToken($token);
         $this->logger->info('Token accepted into workflow', array('token' => $token));
-        if ($this->getStart()->accept($token)) {
-            return true;
-        }
 
-        return false;
+        return $this->getStart()->accept($token);
     }
 
     /**

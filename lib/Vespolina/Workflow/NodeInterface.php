@@ -20,14 +20,14 @@ interface NodeInterface
      *
      * @return $this
      */
-    function setName($name);
+    public function setName($name);
 
     /**
      * Return the name
      *
      * @return string
      */
-    function getName();
+    public function getName();
 
     /**
      * Set the workflow this node belongs to and that workflow's logger
@@ -37,5 +37,5 @@ interface NodeInterface
      *
      * @return $this
      */
-    function setWorkflow(Workflow $workflow, LoggerInterface $logger);
+    public function setWorkflow(Workflow $workflow, LoggerInterface $logger);
 }

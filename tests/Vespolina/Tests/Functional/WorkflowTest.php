@@ -13,15 +13,18 @@ use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Vespolina\Tests\WorkflowCommon;
 use Vespolina\Workflow\Task\Automatic;
+use Vespolina\Workflow\Task\User;
 use Vespolina\Workflow\TokenInterface;
 
 class WorkflowTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @test
+     *
      *  O -> [A] -> O -> [B] -> O
      * in          p1          out
      */
-    public function testSequentialPattern()
+    public function it_supports_sequential_pattern()
     {
         $handler = new TestHandler();
         $logger = new Logger('test', array($handler));
@@ -47,6 +50,44 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
             'Token accepted into Vespolina\Workflow\Place',
             'Token accepted into Vespolina\Tests\Functional\AutoB',
             'Token accepted into workflow.finish',
+        );
+        foreach ($expected as $logEntry) {
+            $this->assertTrue($handler->hasInfo($logEntry));
+        }
+    }
+
+    /**
+     * @test
+     *
+     *  O -> [A] -> O -> [B] -> O
+     * in          p1          out
+     */
+    public function it_support_resume_on_token()
+    {
+        $handler = new TestHandler();
+        $logger = new Logger('test', array($handler));
+        $workflow = WorkflowCommon::createWorkflow($logger);
+
+        // create sequence
+        $a = new AutoA();
+        $workflow->connectToStart($a);
+        $p = WorkflowCommon::createPlace($workflow, $logger);
+        $workflow->connect($a, $p);
+        $b = new ManualB();
+        $workflow->connect($p, $b);
+        $workflow->connectToFinish($b);
+
+        $token = WorkflowCommon::createToken();
+
+        $workflow->accept($token);
+
+        $expected = array(
+            'Token accepted into workflow',
+            'Token accepted into workflow.start',
+            'Token accepted into Vespolina\Tests\Functional\AutoA',
+            'Token accepted into Vespolina\Workflow\Place',
+            //'Token accepted into Vespolina\Tests\Functional\ManualB',
+            //'Token accepted into workflow.finish',
         );
         foreach ($expected as $logEntry) {
             $this->assertTrue($handler->hasInfo($logEntry));
@@ -78,4 +119,17 @@ class AutoB extends Automatic
 
         return true;
     }
+}
+
+class ManualB extends User
+{
+    public function execute(TokenInterface $token)
+    {
+        return true;
+    }
+
+//    protected function cleanUp(TokenInterface $token)
+//    {
+//        return $this->finalize($token);
+//    }
 }

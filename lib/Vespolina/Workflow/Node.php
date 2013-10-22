@@ -82,6 +82,9 @@ class Node implements NodeInterface
         return $success;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function resume(TokenInterface $token)
     {
         $message = 'Token resuming into ' . $this->getName();

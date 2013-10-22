@@ -239,11 +239,13 @@ class Workflow
             $this->addToken($token);
         }
 
+        $success = true;
         foreach ($this->tokens as $token) {
             $node = $token->getLocation();
-
-            $node->accept($token);
+            $success = $success && $node->accept($token);
         }
+
+        return $success;
     }
 
     /**

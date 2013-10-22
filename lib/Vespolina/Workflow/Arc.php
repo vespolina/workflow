@@ -45,7 +45,7 @@ class Arc implements ArcInterface
     /**
      * Return the from
      *
-     * @return mixed
+     * @return NodeInterface
      */
     public function getFrom()
     {
@@ -70,13 +70,17 @@ class Arc implements ArcInterface
     /**
      * Return the to
      *
-     * @return mixed
+     * @return NodeInterface
      */
     public function getTo()
     {
         return $this->to;
     }
 
+    /**
+     * @param NodeInterface $tokenable
+     * @return string
+     */
     protected function getExpectedInterface(NodeInterface $tokenable)
     {
         if ($tokenable instanceof TransactionInterface) {
@@ -86,11 +90,17 @@ class Arc implements ArcInterface
         return 'Vespolina\Workflow\TransactionInterface';
     }
 
+    /**
+     * @param $name string
+     */
     public function setName($name)
     {
         $this->name = $name;
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->name;

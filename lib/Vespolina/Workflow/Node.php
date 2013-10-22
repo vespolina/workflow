@@ -88,7 +88,7 @@ class Node implements NodeInterface
      */
     public function execute(TokenInterface $token)
     {
-        throw new \Exception('The execute method needs to be implement in your class');
+        throw new \Exception('The execute method needs to be implemented in your class');
     }
 
     /**

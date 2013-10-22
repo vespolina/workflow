@@ -13,13 +13,18 @@ use Psr\Log\LoggerInterface;
 
 class Workflow
 {
-    protected $arcs;
-    protected $errors;
-    protected $finish;
-    protected $logger;
-    protected $nodes;
+    /** @var $finish PlaceInterface */
     protected $start;
+    /** @var $finish PlaceInterface */
+    protected $finish;
+    /** @var $arcs ArcInterface[] */
+    protected $arcs;
+    /** @var $nodes NodeInterface[] */
+    protected $nodes;
+    /** @var $tokens TokenInterface[] */
     protected $tokens;
+    protected $logger;
+    protected $errors;
 
     public function __construct(LoggerInterface $logger)
     {
@@ -224,12 +229,19 @@ class Workflow
     }
 
     /**
-     * Ticking method for triggering processing
+     * Triggers processing of current tokens
+     * @param TokenInterface|null $token
+     * @return boolean
      */
-    public function resume()
+    public function flow($token = null)
     {
+        if ($token != null) {
+            $this->addToken($token);
+        }
+
         foreach ($this->tokens as $token) {
             $node = $token->getLocation();
+
             $node->accept($token);
         }
     }

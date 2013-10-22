@@ -22,6 +22,14 @@ interface NodeInterface
     function accept(TokenInterface $token);
 
     /**
+     * Resume any activity in node
+     *
+     * @param TokenInterface $token
+     * @return boolean
+     */
+    function resume(TokenInterface $token);
+
+    /**
      * The executable functionality. This needs to be implemented for custom places and transactions.
      * This method should not be called directly, but triggered by calling the accept() or resume() methods
      *

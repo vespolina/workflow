@@ -82,6 +82,27 @@ class Node implements NodeInterface
         return $success;
     }
 
+    public function resume(TokenInterface $token)
+    {
+        $message = 'Token resuming into ' . $this->getName();
+        $this->logger->info($message, array('token' => $token));
+
+        try {
+            $success = $this->preExecute($token);
+            $success = $success && $this->execute($token);
+            $success = $success && $this->postExecute($token);
+            $success = $success && $this->cleanUp($token);
+        } catch (\Exception $e) {
+            if ($e instanceof ProcessingFailureException) {
+                $this->workflow->addError($e->getMessage());
+            }
+
+            $success = false;
+        }
+
+        return $success;
+    }
+
     /**
      * {@inheritdoc}
      */

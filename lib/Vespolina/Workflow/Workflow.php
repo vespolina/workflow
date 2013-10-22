@@ -230,10 +230,11 @@ class Workflow
 
     /**
      * Triggers processing of current tokens
+     *
      * @param TokenInterface|null $token
      * @return boolean
      */
-    public function flow($token = null)
+    public function resume($token = null)
     {
         if ($token != null) {
             $this->addToken($token);
@@ -242,7 +243,7 @@ class Workflow
         $success = true;
         foreach ($this->tokens as $token) {
             $node = $token->getLocation();
-            $success = $success && $node->accept($token);
+            $success = $success && $node->resume($token);
         }
 
         return $success;

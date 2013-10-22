@@ -1,9 +1,16 @@
 <?php
 
+/**
+ * (c) 2013 - ∞ Vespolina Project http://www.vespolina-project.org
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace spec\Vespolina\Workflow;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
+use Vespolina\Workflow\TokenableInterface;
 
 class ArcSpec extends ObjectBehavior
 {
@@ -26,19 +33,13 @@ class ArcSpec extends ObjectBehavior
         $this->shouldThrow(new \InvalidArgumentException('The "from" node should be an instance of Vespolina\Workflow\PlaceInterface'))->duringSetFrom($transaction);
     }
 
-    /**
-     * @param \Vespolina\Workflow\Tokenable $from
-     */
-    function it_should_add_self_to_tokenable_from($from)
+    function it_should_add_self_to_tokenable_from(TokenableInterface $from)
     {
         $this->setFrom($from);
         $from->addOutput($this)->shouldHaveBeenCalled();
     }
 
-    /**
-     * @param \Vespolina\Workflow\Tokenable $to
-     */
-    function it_should_add_self_to_tokenable_to($to)
+    function it_should_add_self_to_tokenable_to(TokenableInterface $to)
     {
         $this->setTo($to);
         $to->addInput($this)->shouldHaveBeenCalled();

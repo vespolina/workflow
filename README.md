@@ -4,6 +4,7 @@ workflow
 [![Build Status](https://secure.travis-ci.org/vespolina/workflow.png?branch=master)](http://travis-ci.org/vespolina/workflow)
 [![Total Downloads](https://poser.pugx.org/vespolina/workflow/downloads.png)](https://packagist.org/packages/vespolina/workflow)
 [![Latest Stable Version](https://poser.pugx.org/vespolina/workflow/v/stable.png)](https://packagist.org/packages/vespolina/workflow)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/6d911701-1bc4-4cdb-8d13-810c47a65978/mini.png)](https://insight.sensiolabs.com/projects/6d911701-1bc4-4cdb-8d13-810c47a65978)
 
 Workflow is a library that lets you first build a graph with places and transactions
 interconnecting them with arcs. And then lets you traverse the created workflow for

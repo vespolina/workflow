@@ -66,9 +66,8 @@ class Node implements NodeInterface
         $this->tokens[] = $token;
         $token->setLocation($this);
 
-        $success = true;
         try {
-            $success = $success && $this->preExecute($token);
+            $success = $this->preExecute($token);
             $success = $success && $this->execute($token);
             $success = $success && $this->postExecute($token);
             $success = $success && $this->cleanUp($token);
@@ -77,7 +76,7 @@ class Node implements NodeInterface
                 $this->workflow->addError($e->getMessage());
             }
 
-            return false;
+            $success = false;
         }
 
         return $success;
@@ -94,7 +93,7 @@ class Node implements NodeInterface
     /**
      * {@inheritdoc}
      */
-    public function addInput(Arc $arc)
+    public function addInput(ArcInterface $arc)
     {
         $this->inputs[] = $arc;
     }
@@ -110,7 +109,7 @@ class Node implements NodeInterface
     /**
      * {@inheritdoc}
      */
-    public function addOutput(Arc $arc)
+    public function addOutput(ArcInterface $arc)
     {
         $this->outputs[] = $arc;
     }
@@ -131,21 +130,37 @@ class Node implements NodeInterface
         return $this->tokens;
     }
 
+    /**
+     * @param TokenInterface $token
+     * @return boolean
+     */
     protected function cleanUp(TokenInterface $token)
     {
         return true;
     }
 
+    /**
+     * @param TokenInterface $token
+     * @return boolean
+     */
     protected function postExecute(TokenInterface $token)
     {
         return true;
     }
 
+    /**
+     * @param TokenInterface $token
+     * @return boolean
+     */
     protected function preExecute(TokenInterface $token)
     {
         return true;
     }
 
+    /**
+     * @param TokenInterface $token
+     * @return boolean
+     */
     protected function finalize(TokenInterface $token)
     {
         if (!$outputs = $this->getOutputs()) {
@@ -185,5 +200,7 @@ class Node implements NodeInterface
                 return true;
             }
         }
+
+        return false;
     }
 }

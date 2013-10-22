@@ -33,35 +33,35 @@ interface NodeInterface
     /**
      * Add an incoming arc
      *
-     * @param Arc $arc
+     * @param ArcInterface $arc
      */
-    function addInput(Arc $arc);
+    function addInput(ArcInterface $arc);
 
     /**
      * Return incoming arcs
      *
-     * @return Arc[]
+     * @return ArcInterface[]
      */
     function getInputs();
 
     /**
      * Add an outgoing arc
      *
-     * @param Arc $arc
+     * @param ArcInterface $arc
      */
-    function addOutput(Arc $arc);
+    function addOutput(ArcInterface $arc);
 
     /**
      * Return outgoing arcs
      *
-     * @return Arc[]
+     * @return ArcInterface[]
      */
     function getOutputs();
 
     /**
      * Return the tokens
      *
-     * @return \Vespolina\Workflow\TokenInterface[]
+     * @return TokenInterface[]
      */
     function getTokens();
 

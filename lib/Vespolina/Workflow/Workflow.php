@@ -170,6 +170,7 @@ class Workflow
      * Remove a token from the collection of tokens
      *
      * @param TokenInterface $token
+     * @return boolean;
      */
     public function removeToken(TokenInterface $token)
     {
@@ -177,9 +178,11 @@ class Workflow
             if ($token === $curToken) {
                 unset($this->tokens[$key]);
 
-                return;
+                return true;
             }
         }
+
+        return false;
     }
 
     public function resume()

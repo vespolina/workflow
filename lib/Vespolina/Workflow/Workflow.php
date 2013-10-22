@@ -182,6 +182,14 @@ class Workflow
         }
     }
 
+    public function resume()
+    {
+        foreach ($this->tokens as $token) {
+            $node = $token->getLocation();
+            $node->accept($token);
+        }
+    }
+
     public function validateWorkflow()
     {
         $this->currentValidationStep('reset');

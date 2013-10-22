@@ -10,16 +10,16 @@
 namespace spec\Vespolina\Workflow;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
+use Vespolina\Workflow\Node;
+use Vespolina\Workflow\Place;
 use Vespolina\Workflow\PlaceInterface;
+use Monolog\Handler\TestHandler;
+use Monolog\Logger;
+use Vespolina\Workflow\Task\Automatic;
 
 class WorkflowSpec extends ObjectBehavior
 {
-    /**
-     * @param \Monolog\Logger $logger
-     * @param \Monolog\Handler\TestHandler $handler
-     */
-    function let($logger, $handler)
+    function let(Logger $logger, TestHandler $handler)
     {
         $logger->pushHandler($handler);
         $this->beConstructedWith($logger);
@@ -34,22 +34,14 @@ class WorkflowSpec extends ObjectBehavior
         $this->getNodes()->shouldContainName('workflow.finish');
     }
 
-    /**
-     * @param \Vespolina\Workflow\Place $from
-     * @param \Vespolina\Workflow\Task\Automatic $to
-     */
-    function it_should_create_an_arc($from, $to)
+    function it_should_create_an_arc(Place $from, Automatic $to)
     {
         $this->createArc($from, $to)
             ->shouldReturnAnInstanceOf('Vespolina\Workflow\Arc')
         ;
     }
 
-    /**
-     * @param \Vespolina\Workflow\Node $node
-     * @param \Monolog\Logger $logger
-     */
-    function it_should_add_a_node($node, $logger)
+    function it_should_add_a_node(Node $node, Logger $logger)
     {
         $this->addNode($node);
         $this->getNodes()->shouldContainNode($node);

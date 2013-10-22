@@ -10,7 +10,6 @@
 namespace spec\Vespolina\Workflow\Task;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class MessageSpec extends ObjectBehavior
 {

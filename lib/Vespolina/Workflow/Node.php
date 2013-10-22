@@ -163,17 +163,21 @@ class Node implements NodeInterface
      */
     protected function finalize(TokenInterface $token)
     {
+        // no outgoing arcs, means ending node, do not remove token, just return true
         if (!$outputs = $this->getOutputs()) {
             return true;
         }
+
+        // for all other cases remove token from node
         $this->removeToken($token);
-        // single out, no token clone, just update the node location
+
+        // single output, no token clone, just update the node location
         if (sizeof($outputs) == 1) {
             $output = array_shift($outputs);
             return $output->accept($token);
         }
 
-        // multiple outs, clone for each path, remove original token
+        // multiple outputs, clone for each path, remove original token
         $success = true;
         foreach ($outputs as $output) {
             $newToken = clone $token;

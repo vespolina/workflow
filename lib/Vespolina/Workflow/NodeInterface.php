@@ -23,7 +23,7 @@ interface NodeInterface
 
     /**
      * The executable functionality. This needs to be implemented for custom places and transactions.
-     * This method should not be called directly, but triggered by calling the accept() method
+     * This method should not be called directly, but triggered by calling the accept() or resume() methods
      *
      * @param TokenInterface $token
      * @return mixed

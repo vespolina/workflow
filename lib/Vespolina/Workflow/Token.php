@@ -15,11 +15,7 @@ class Token implements TokenInterface
     protected $location;
 
     /**
-     * Set the data
-     *
-     * @param string $key
-     * @param mixed $data
-     * @return $this
+     * {@inheritdoc}
      */
     public function setData($key, $data)
     {
@@ -29,10 +25,7 @@ class Token implements TokenInterface
     }
 
     /**
-     * Return the data
-     *
-     * @param $key
-     * @return mixed
+     * {@inheritdoc}
      */
     public function getData($key)
     {

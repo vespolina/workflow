@@ -29,7 +29,8 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     public function testSetWorkflow()
     {
-        $logger = new Logger('test');
+        $handler = new TestHandler();
+        $logger = new Logger('test', array($handler));
         $workflow = WorkflowCommon::createWorkflow($logger);
         $node = new TestNode();
         $this->assertSame($node, $node->setWorkflow($workflow, $logger));
@@ -112,7 +113,8 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     public function testFinalizeSingleArc()
     {
-        $logger = new Logger('test');
+        $handler = new TestHandler();
+        $logger = new Logger('test', array($handler));
         $workflow = WorkflowCommon::createWorkflow($logger);
         $tokenable = new ExtendedTokenable();
         $tokenable->setWorkflow($workflow, $logger);
@@ -132,7 +134,8 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     public function testFinalizeMultipleArcs()
     {
-        $logger = new Logger('test');
+        $handler = new TestHandler();
+        $logger = new Logger('test', array($handler));
         $workflow = WorkflowCommon::createWorkflow($logger);
         $tokenable = new ExtendedTokenable();
         $tokenable->setWorkflow($workflow, $logger);

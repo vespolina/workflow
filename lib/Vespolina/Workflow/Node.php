@@ -89,6 +89,7 @@ class Node implements NodeInterface
     {
         $message = 'Token resuming into ' . $this->getName();
         $this->logger->info($message, array('token' => $token));
+        $token->setLocation($this);
 
         try {
             $success = $this->preExecute($token);

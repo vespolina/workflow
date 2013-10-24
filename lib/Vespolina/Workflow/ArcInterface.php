@@ -9,21 +9,21 @@
 
 namespace Vespolina\Workflow;
 
-interface ArcInterface extends NodeInterface
+interface ArcInterface
 {
     /**
-     * @param TokenableInterface $tokenable
+     * @param NodeInterface $tokenable
      * @return mixed
      * @throws \InvalidArgumentException
      */
-    public function setFrom(TokenableInterface $tokenable);
+    public function setFrom(NodeInterface $tokenable);
 
     /**
-     * @param TokenableInterface $tokenable
+     * @param NodeInterface $tokenable
      * @return mixed
      * @throws \InvalidArgumentException
      */
-    public function setTo(TokenableInterface $tokenable);
+    public function setTo(NodeInterface $tokenable);
 
     /**
      * @param TokenInterface $token

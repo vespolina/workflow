@@ -9,11 +9,11 @@
 
 namespace Vespolina\Workflow;
 
-class Arc extends Node implements ArcInterface
+class Arc implements ArcInterface
 {
     protected $from;
     protected $to;
-    protected $token;
+    protected $name;
 
     /**
      * {@inheritdoc}
@@ -30,7 +30,7 @@ class Arc extends Node implements ArcInterface
     /**
      * {@inheritdoc}
      */
-    public function setFrom(TokenableInterface $tokenable)
+    public function setFrom(NodeInterface $tokenable)
     {
         if (isset($this->to)) {
             $expectedInterface = $this->getExpectedInterface($this->to);
@@ -55,7 +55,7 @@ class Arc extends Node implements ArcInterface
     /**
      * {@inheritdoc}
      */
-    public function setTo(TokenableInterface $tokenable)
+    public function setTo(NodeInterface $tokenable)
     {
         if (isset($this->from)) {
             $expectedInterface = $this->getExpectedInterface($this->from);
@@ -77,12 +77,22 @@ class Arc extends Node implements ArcInterface
         return $this->to;
     }
 
-    protected function getExpectedInterface(TokenableInterface $tokenable)
+    protected function getExpectedInterface(NodeInterface $tokenable)
     {
         if ($tokenable instanceof TransactionInterface) {
             return 'Vespolina\Workflow\PlaceInterface';
         }
 
         return 'Vespolina\Workflow\TransactionInterface';
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    public function getName()
+    {
+        return $this->name;
     }
 }

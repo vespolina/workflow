@@ -9,7 +9,7 @@
 
 namespace Vespolina\Workflow;
 
-class Place extends Tokenable implements PlaceInterface
+class Place extends Node implements PlaceInterface
 {
     /**
      * This is a default execution action, move the token to the outputs.

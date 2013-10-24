@@ -47,7 +47,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
     {
         $workflow = WorkflowCommon::createWorkflow();
         $arc = WorkflowCommon::createArc();
-        $workflow->addNode($arc);
+        $workflow->addArc($arc);
         $this->assertContains($arc, $workflow->getArcs());
     }
 

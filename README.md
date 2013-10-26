@@ -5,6 +5,9 @@ workflow
 [![Total Downloads](https://poser.pugx.org/vespolina/workflow/downloads.png)](https://packagist.org/packages/vespolina/workflow)
 [![Latest Stable Version](https://poser.pugx.org/vespolina/workflow/v/stable.png)](https://packagist.org/packages/vespolina/workflow)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/6d911701-1bc4-4cdb-8d13-810c47a65978/mini.png)](https://insight.sensiolabs.com/projects/6d911701-1bc4-4cdb-8d13-810c47a65978)
+[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/cordoval/workflow/badges/quality-score.png?s=615332572cfaa989c8dd01a8d6cf60a9d25d7314)](https://scrutinizer-ci.com/g/cordoval/workflow/)
+[![Code Coverage](https://scrutinizer-ci.com/g/cordoval/workflow/badges/coverage.png?s=40f2ffefe9da985a472399fde3e444d60e2453ad)](https://scrutinizer-ci.com/g/cordoval/workflow/)
+[![Dependency Status](https://www.versioneye.com/php/vespolina:workflow/dev-master/badge.png)](https://www.versioneye.com/php/vespolina:workflow/dev-master)
 
 Workflow is a library that lets you first build a graph with places and transactions
 interconnecting them with arcs. And then lets you traverse the created workflow for

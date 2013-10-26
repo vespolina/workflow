@@ -9,6 +9,7 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
+use Vespolina\Workflow\Dumper\GraphvizDumper;
 use Vespolina\Workflow\Task\Automatic;
 use Vespolina\Workflow\Place;
 use Vespolina\Workflow\Workflow;
@@ -29,3 +30,6 @@ $workflow->connect($p, $b);
 $workflow->connect($b, $workflow->getFinish());
 
 $workflow->accept(new Token());
+
+$dumper = new GraphvizDumper($workflow);
+echo $dumper->dump();

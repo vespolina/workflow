@@ -52,7 +52,7 @@ class Workflow
     /**
      * Return the arcs
      *
-     * @return mixed
+     * @return \Vespolina\Workflow\Arc[]
      */
     public function getArcs()
     {
@@ -159,7 +159,7 @@ class Workflow
     /**
      * Return the tokens
      *
-     * @return array of \Vespolina\Workflow\TokenInterface
+     * @return \Vespolina\Workflow\TokenInterface[]
      */
     public function getTokens()
     {

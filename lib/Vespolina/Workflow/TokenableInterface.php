@@ -59,7 +59,7 @@ interface TokenableInterface extends NodeInterface
     /**
      * Return the tokens
      *
-     * @return TokenInterface[]
+     * @return \Vespolina\Workflow\TokenInterface[]
      */
     function getTokens();
 }

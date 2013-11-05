@@ -13,13 +13,18 @@ use Psr\Log\LoggerInterface;
 
 class Workflow
 {
-    protected $arcs;
-    protected $errors;
-    protected $finish;
-    protected $logger;
-    protected $nodes;
+    /** @var $finish PlaceInterface */
     protected $start;
+    /** @var $finish PlaceInterface */
+    protected $finish;
+    /** @var $arcs ArcInterface[] */
+    protected $arcs;
+    /** @var $nodes NodeInterface[] */
+    protected $nodes;
+    /** @var $tokens TokenInterface[] */
     protected $tokens;
+    protected $logger;
+    protected $errors;
 
     public function __construct(LoggerInterface $logger)
     {
@@ -42,11 +47,8 @@ class Workflow
     {
         $this->addToken($token);
         $this->logger->info('Token accepted into workflow', array('token' => $token));
-        if ($this->getStart()->accept($token)) {
-            return true;
-        }
 
-        return false;
+        return $this->getStart()->accept($token);
     }
 
     /**
@@ -77,6 +79,10 @@ class Workflow
         return $this->createArc($from, $to);
     }
 
+    /**
+     * @param TransactionInterface $tokenable
+     * @return ArcInterface
+     */
     public function connectToStart(TransactionInterface $tokenable)
     {
         if (!in_array($tokenable, $this->nodes)) {
@@ -86,6 +92,10 @@ class Workflow
         return $this->createArc($this->start, $tokenable);
     }
 
+    /**
+     * @param TransactionInterface $tokenable
+     * @return ArcInterface
+     */
     public function connectToFinish(TransactionInterface $tokenable)
     {
         if (!in_array($tokenable, $this->nodes)) {
@@ -95,6 +105,11 @@ class Workflow
         return $this->createArc($tokenable, $this->finish);
     }
 
+    /**
+     * @param NodeInterface $from
+     * @param NodeInterface $to
+     * @return ArcInterface
+     */
     public function createArc(NodeInterface $from, NodeInterface $to)
     {
         $arc = new Arc();
@@ -105,6 +120,10 @@ class Workflow
         return $arc;
     }
 
+    /**
+     * @param array $data
+     * @return TokenInterface
+     */
     public function createToken(array $data = array())
     {
         $token = new Token();
@@ -115,42 +134,66 @@ class Workflow
         return $token;
     }
 
+    /**
+     * @return PlaceInterface
+     */
     public function getStart()
     {
         return $this->start;
     }
 
+    /**
+     * @param NodeInterface $node
+     */
     public function addNode(NodeInterface $node)
     {
         $node->setWorkflow($this, $this->logger);
         $this->nodes[] = $node;
     }
 
-    public function addArc($arc)
+    /**
+     * @param ArcInterface $arc
+     */
+    public function addArc(ArcInterface $arc)
     {
         $this->arcs[] = $arc;
     }
 
+    /**
+     * @return NodeInterface[]
+     */
     public function getNodes()
     {
         return $this->nodes;
     }
 
+    /**
+     * @return PlaceInterface
+     */
     public function getFinish()
     {
         return $this->finish;
     }
 
+    /**
+     * @param $error
+     */
     public function addError($error)
     {
         $this->errors[] = $error;
     }
 
+    /**
+     * @return mixed
+     */
     public function getErrors()
     {
         return $this->errors;
     }
 
+    /**
+     * @param TokenInterface $token
+     */
     public function addToken(TokenInterface $token)
     {
         $this->tokens[] = $token;
@@ -159,7 +202,7 @@ class Workflow
     /**
      * Return the tokens
      *
-     * @return array of \Vespolina\Workflow\TokenInterface
+     * @return TokenInterface[]
      */
     public function getTokens()
     {
@@ -170,6 +213,7 @@ class Workflow
      * Remove a token from the collection of tokens
      *
      * @param TokenInterface $token
+     * @return boolean;
      */
     public function removeToken(TokenInterface $token)
     {
@@ -177,11 +221,37 @@ class Workflow
             if ($token === $curToken) {
                 unset($this->tokens[$key]);
 
-                return;
+                return true;
             }
         }
+
+        return false;
     }
 
+    /**
+     * Triggers processing of current tokens
+     *
+     * @param TokenInterface|null $token
+     * @return boolean
+     */
+    public function resume($token = null)
+    {
+        if ($token != null) {
+            $this->addToken($token);
+        }
+
+        $success = true;
+        foreach ($this->tokens as $token) {
+            $node = $token->getLocation();
+            $success = $success && $node->resume($token);
+        }
+
+        return $success;
+    }
+
+    /**
+     * @return boolean
+     */
     public function validateWorkflow()
     {
         $this->currentValidationStep('reset');
@@ -191,6 +261,10 @@ class Workflow
         return $success;
     }
 
+    /**
+     * @param NodeInterface $node
+     * @return boolean
+     */
     public function traverseNext(NodeInterface $node)
     {
         $this->logger->info(sprintf('Node %s reached, step %s', $node->getName(), $this->currentValidationStep()), array('node' => $node));
@@ -218,6 +292,10 @@ class Workflow
         return $success;
     }
 
+    /**
+     * @param string $reset
+     * @return mixed
+     */
     protected function currentValidationStep($reset = '')
     {
         static $step;

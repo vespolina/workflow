@@ -22,8 +22,16 @@ interface NodeInterface
     function accept(TokenInterface $token);
 
     /**
+     * Resume any activity in node
+     *
+     * @param TokenInterface $token
+     * @return boolean
+     */
+    function resume(TokenInterface $token);
+
+    /**
      * The executable functionality. This needs to be implemented for custom places and transactions.
-     * This method should not be called directly, but triggered by calling the accept() method
+     * This method should not be called directly, but triggered by calling the accept() or resume() methods
      *
      * @param TokenInterface $token
      * @return mixed
@@ -33,35 +41,35 @@ interface NodeInterface
     /**
      * Add an incoming arc
      *
-     * @param Arc $arc
+     * @param ArcInterface $arc
      */
-    function addInput(Arc $arc);
+    function addInput(ArcInterface $arc);
 
     /**
      * Return incoming arcs
      *
-     * @return Arc[]
+     * @return ArcInterface[]
      */
     function getInputs();
 
     /**
      * Add an outgoing arc
      *
-     * @param Arc $arc
+     * @param ArcInterface $arc
      */
-    function addOutput(Arc $arc);
+    function addOutput(ArcInterface $arc);
 
     /**
      * Return outgoing arcs
      *
-     * @return Arc[]
+     * @return ArcInterface[]
      */
     function getOutputs();
 
     /**
      * Return the tokens
      *
-     * @return \Vespolina\Workflow\TokenInterface[]
+     * @return TokenInterface[]
      */
     function getTokens();
 

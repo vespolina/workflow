@@ -42,4 +42,19 @@ interface TokenInterface
      * @return NodeInterface
      */
     function getLocation();
+
+    /**
+     * Return execution status
+     *
+     * @return mixed
+     */
+    function getStatus();
+
+    /**
+     * Set execution status
+     *
+     * @param $status
+     * @return mixed
+     */
+    function setStatus($status);
 }

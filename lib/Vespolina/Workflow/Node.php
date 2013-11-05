@@ -14,6 +14,11 @@ use Vespolina\Workflow\Exception\ProcessingFailureException;
 
 class Node implements NodeInterface
 {
+    const PRE_EXECUTE = 0;
+    const EXECUTE = 1;
+    const POST_EXECUTE = 2;
+    const CLEAN_UP = 3;
+
     protected $logger;
     protected $name;
     /** @var  \Vespolina\Workflow\Workflow */
@@ -66,21 +71,18 @@ class Node implements NodeInterface
         $this->tokens[] = $token;
         $token->setLocation($this);
 
-        $success = true;
-        try {
-            $success = $success && $this->preExecute($token);
-            $success = $success && $this->execute($token);
-            $success = $success && $this->postExecute($token);
-            $success = $success && $this->cleanUp($token);
-        } catch (\Exception $e) {
-            if ($e instanceof ProcessingFailureException) {
-                $this->workflow->addError($e->getMessage());
-            }
+        return $this->processToken($token);
+    }
 
-            return false;
-        }
+    /**
+     * {@inheritdoc}
+     */
+    public function resume(TokenInterface $token)
+    {
+        $message = 'Token resuming in ' . $this->getName();
+        $this->logger->info($message, array('token' => $token));
 
-        return $success;
+        return $this->processtoken($token);
     }
 
     /**
@@ -88,13 +90,13 @@ class Node implements NodeInterface
      */
     public function execute(TokenInterface $token)
     {
-        throw new \Exception('The execute method needs to be implement in your class');
+        throw new \Exception('The execute method needs to be implemented in your class');
     }
 
     /**
      * {@inheritdoc}
      */
-    public function addInput(Arc $arc)
+    public function addInput(ArcInterface $arc)
     {
         $this->inputs[] = $arc;
     }
@@ -110,7 +112,7 @@ class Node implements NodeInterface
     /**
      * {@inheritdoc}
      */
-    public function addOutput(Arc $arc)
+    public function addOutput(ArcInterface $arc)
     {
         $this->outputs[] = $arc;
     }
@@ -131,34 +133,54 @@ class Node implements NodeInterface
         return $this->tokens;
     }
 
+    /**
+     * @param TokenInterface $token
+     * @return boolean
+     */
     protected function cleanUp(TokenInterface $token)
     {
         return true;
     }
 
+    /**
+     * @param TokenInterface $token
+     * @return boolean
+     */
     protected function postExecute(TokenInterface $token)
     {
         return true;
     }
 
+    /**
+     * @param TokenInterface $token
+     * @return boolean
+     */
     protected function preExecute(TokenInterface $token)
     {
         return true;
     }
 
+    /**
+     * @param TokenInterface $token
+     * @return boolean
+     */
     protected function finalize(TokenInterface $token)
     {
+        // no outgoing arcs, means ending node, do not remove token, just return true
         if (!$outputs = $this->getOutputs()) {
             return true;
         }
+
+        // for all other cases remove token from node
         $this->removeToken($token);
-        // single out, no token clone, just update the node location
+
+        // single output, no token clone, just update the node location
         if (sizeof($outputs) == 1) {
             $output = array_shift($outputs);
             return $output->accept($token);
         }
 
-        // multiple outs, clone for each path, remove original token
+        // multiple outputs, clone for each path, remove original token
         $success = true;
         foreach ($outputs as $output) {
             $newToken = clone $token;
@@ -185,5 +207,91 @@ class Node implements NodeInterface
                 return true;
             }
         }
+
+        return false;
+    }
+
+    private function runStep(TokenInterface $token, $stepName)
+    {
+        $token->setStatus($this->toStatusConstant($stepName));
+
+        try {
+            $success = $this->$stepName($token);
+        } catch (\Exception $e) {
+            if ($e instanceof ProcessingFailureException) {
+                $this->workflow->addError($e->getMessage());
+            }
+
+            $success = false;
+        }
+
+        return $success;
+    }
+
+    private function toStatusConstant($stepName)
+    {
+        preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $stepName, $matches);
+        $ret = $matches[0];
+        foreach ($ret as &$match) {
+            $match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
+        }
+        $constantString = implode('_', $ret);
+
+        switch ($constantString) {
+            case 'PRE_EXECUTE':
+                return self::PRE_EXECUTE;
+            case 'EXECUTE':
+                return self::EXECUTE;
+            case 'POST_EXECUTE':
+                return self::POST_EXECUTE;
+            case 'CLEAN_UP':
+                return self::CLEAN_UP;
+        }
+
+        return self::PRE_EXECUTE;
+    }
+
+    private function processToken(TokenInterface $token)
+    {
+        $success = true;
+        if ($token->getStatus() <= self::PRE_EXECUTE) {
+            if (!$success = $this->runStep($token, 'preExecute')) {
+                $this->logStalled($token);
+                return $success;
+            }
+        }
+
+        if ($token->getStatus() <= self::EXECUTE) {
+            if (!$success = $this->runStep($token, 'execute')) {
+                $this->logStalled($token);
+                return $success;
+            }
+        }
+
+        if ($token->getStatus() <= self::POST_EXECUTE) {
+            if (!$success = $this->runStep($token, 'postExecute')) {
+                $this->logStalled($token);
+                return $success;
+            }
+        }
+
+        if ($token->getStatus() <= self::CLEAN_UP) {
+            if (!$success = $this->runStep($token, 'cleanUp')) {
+                $this->logStalled($token);
+                return $success;
+            }
+        }
+
+        return $success;
+    }
+
+    private function logStalled(TokenInterface $token)
+    {
+        $message = sprintf(
+                'Token resuming in %s with status %s',
+                $this->getName(),
+                $token->getStatus()
+        );
+        $this->logger->info($message, array('token' => $token));
     }
 }

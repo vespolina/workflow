@@ -99,9 +99,8 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($token->getData('breaking_condition'));
         $token->setData('breaking_condition', true);
 
-        // ?? some code here either affact execute or cleanup
-
         $workflow->resume();
+
         $this->assertEquals($token->getLocation(), $workflow->getFinish());
 
         $expectedOnResume = array(

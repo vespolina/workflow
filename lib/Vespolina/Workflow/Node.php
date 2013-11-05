@@ -90,6 +90,9 @@ class Node implements NodeInterface
         $success = true;
         if ($token->getStatus() <= self::PRE_EXECUTE) {
             $success = $this->runStep($token, 'preExecute');
+            if (!$success) {
+                return $success;
+            }
         }
 
         if ($token->getStatus() <= self::EXECUTE) {

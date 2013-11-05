@@ -71,12 +71,7 @@ class Node implements NodeInterface
         $this->tokens[] = $token;
         $token->setLocation($this);
 
-        $success = $this->runStep($token, 'preExecute');
-        $success = $success && $this->runStep($token, 'execute');
-        $success = $success && $this->runStep($token, 'postExecute');
-        $success = $success && $this->runStep($token, 'cleanUp');
-
-        return $success;
+        return $this->processToken($token);
     }
 
     /**
@@ -87,27 +82,7 @@ class Node implements NodeInterface
         $message = 'Token resuming in ' . $this->getName();
         $this->logger->info($message, array('token' => $token));
 
-        $success = true;
-        if ($token->getStatus() <= self::PRE_EXECUTE) {
-            $success = $this->runStep($token, 'preExecute');
-            if (!$success) {
-                return $success;
-            }
-        }
-
-        if ($token->getStatus() <= self::EXECUTE) {
-            $success = $success && $this->runStep($token, 'execute');
-        }
-
-        if ($token->getStatus() <= self::EXECUTE) {
-            $success = $success && $this->runStep($token, 'postExecute');
-        }
-
-        if ($token->getStatus() <= self::CLEAN_UP) {
-            $success = $success && $this->runStep($token, 'cleanUp');
-        }
-
-        return $success;
+        return $this->processtoken($token);
     }
 
     /**
@@ -274,5 +249,35 @@ class Node implements NodeInterface
         }
 
         return self::PRE_EXECUTE;
+    }
+
+    private function processToken(TokenInterface $token)
+    {
+        $success = true;
+        if ($token->getStatus() <= self::PRE_EXECUTE) {
+            if (!$success = $this->runStep($token, 'preExecute')) {
+                return $success;
+            }
+        }
+
+        if ($token->getStatus() <= self::EXECUTE) {
+            if (!$success = $this->runStep($token, 'execute')) {
+                return $success;
+            }
+        }
+
+        if ($token->getStatus() <= self::POST_EXECUTE) {
+            if (!$success = $this->runStep($token, 'postExecute')) {
+                return $success;
+            }
+        }
+
+        if ($token->getStatus() <= self::CLEAN_UP) {
+            if (!$success = $this->runStep($token, 'cleanUp')) {
+                return $success;
+            }
+        }
+
+        return $success;
     }
 }

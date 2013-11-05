@@ -53,7 +53,8 @@ interface TokenInterface
     /**
      * Set execution status
      *
+     * @param $status
      * @return mixed
      */
-    function setStatus();
+    function setStatus($status);
 }

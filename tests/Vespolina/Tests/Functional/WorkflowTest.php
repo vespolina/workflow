@@ -79,7 +79,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
 
         $token = WorkflowCommon::createToken();
 
-        $workflow->resume($token);
+        $workflow->accept($token);
 
         $expectedFirst = array(
             'Token accepted into workflow',

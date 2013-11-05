@@ -56,7 +56,7 @@ class Token implements TokenInterface
     }
 
     /**
-     * @return mixed
+     * {@inheritdoc}
      */
     public function getStatus()
     {
@@ -64,7 +64,7 @@ class Token implements TokenInterface
     }
 
     /**
-     * @param mixed $status
+     * {@inheritdoc}
      */
     public function setStatus($status)
     {

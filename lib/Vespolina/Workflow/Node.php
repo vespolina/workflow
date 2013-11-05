@@ -14,6 +14,11 @@ use Vespolina\Workflow\Exception\ProcessingFailureException;
 
 class Node implements NodeInterface
 {
+    const PRE_EXECUTE = 0;
+    const EXECUTE = 1;
+    const POST_EXECUTE = 2;
+    const CLEAN_UP = 3;
+
     protected $logger;
     protected $name;
     /** @var  \Vespolina\Workflow\Workflow */
@@ -82,23 +87,21 @@ class Node implements NodeInterface
         $message = 'Token resuming in ' . $this->getName();
         $this->logger->info($message, array('token' => $token));
 
-        if ($token->getStatus() === 'preExecute') {
-
+        $success = true;
+        if ($token->getStatus() <= self::PRE_EXECUTE) {
+            $success = $this->runStep($token, 'preExecute');
         }
 
-        if ($token->getStatus() === 'preExecute') {
+        if ($token->getStatus() <= self::EXECUTE) {
+            $success = $success && $this->runStep($token, 'execute');
+        }
 
-        try {
-            $success = $this->preExecute($token);
-            $success = $success && $this->execute($token);
-            $success = $success && $this->postExecute($token);
-            $success = $success && $this->cleanUp($token);
-        } catch (\Exception $e) {
-            if ($e instanceof ProcessingFailureException) {
-                $this->workflow->addError($e->getMessage());
-            }
+        if ($token->getStatus() <= self::EXECUTE) {
+            $success = $success && $this->runStep($token, 'postExecute');
+        }
 
-            $success = false;
+        if ($token->getStatus() <= self::CLEAN_UP) {
+            $success = $success && $this->runStep($token, 'cleanUp');
         }
 
         return $success;
@@ -232,7 +235,7 @@ class Node implements NodeInterface
 
     private function runStep(TokenInterface $token, $stepName)
     {
-        $token->setStatus($stepName);
+        $token->setStatus($this->toStatusConstant($stepName));
 
         try {
             $success = $this->$stepName($token);
@@ -245,5 +248,28 @@ class Node implements NodeInterface
         }
 
         return $success;
+    }
+
+    private function toStatusConstant($stepName)
+    {
+        preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $stepName, $matches);
+        $ret = $matches[0];
+        foreach ($ret as &$match) {
+            $match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
+        }
+        $constantString = implode('_', $ret);
+
+        switch ($constantString) {
+            case 'PRE_EXECUTE':
+                return self::PRE_EXECUTE;
+            case 'EXECUTE':
+                return self::EXECUTE;
+            case 'POST_EXECUTE':
+                return self::POST_EXECUTE;
+            case 'CLEAN_UP':
+                return self::CLEAN_UP;
+        }
+
+        return self::PRE_EXECUTE;
     }
 }

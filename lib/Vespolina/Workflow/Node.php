@@ -256,28 +256,42 @@ class Node implements NodeInterface
         $success = true;
         if ($token->getStatus() <= self::PRE_EXECUTE) {
             if (!$success = $this->runStep($token, 'preExecute')) {
+                $this->logStalled($token);
                 return $success;
             }
         }
 
         if ($token->getStatus() <= self::EXECUTE) {
             if (!$success = $this->runStep($token, 'execute')) {
+                $this->logStalled($token);
                 return $success;
             }
         }
 
         if ($token->getStatus() <= self::POST_EXECUTE) {
             if (!$success = $this->runStep($token, 'postExecute')) {
+                $this->logStalled($token);
                 return $success;
             }
         }
 
         if ($token->getStatus() <= self::CLEAN_UP) {
             if (!$success = $this->runStep($token, 'cleanUp')) {
+                $this->logStalled($token);
                 return $success;
             }
         }
 
         return $success;
+    }
+
+    private function logStalled(TokenInterface $token)
+    {
+        $message = sprintf(
+                'Token resuming in %s with status %s',
+                $this->getName(),
+                $token->getStatus()
+        );
+        $this->logger->info($message, array('token' => $token));
     }
 }

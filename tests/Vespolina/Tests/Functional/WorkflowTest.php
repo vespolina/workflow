@@ -78,8 +78,11 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $workflow->connectToFinish($b);
 
         $token = WorkflowCommon::createToken();
+        $token->setData('breaking_condition', false);
 
         $workflow->accept($token);
+
+        $this->assertNotEquals($token->getLocation()->getName(), $workflow->getFinish()->getName());
 
         $expectedFirst = array(
             'Token accepted into workflow',
@@ -88,22 +91,25 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
             'Token accepted into Vespolina\Workflow\Place',
         );
 
-        foreach ($expected as $logEntry) {
+        foreach ($expectedFirst as $logEntry) {
             $this->assertTrue($handler->hasInfo($logEntry));
         }
 
         // affect somehow the task processing b so that it gets activated
+        $this->assertFalse($token->getData('breaking_condition'));
+        $token->setData('breaking_condition', true);
 
         // ?? some code here either affact execute or cleanup
 
-        $workflow->resume($token);
+        $workflow->resume();
+        $this->assertEquals($token->getLocation(), $workflow->getFinish());
 
         $expectedOnResume = array(
             'Token accepted into Vespolina\Tests\Functional\ManualB',
             'Token accepted into workflow.finish',
         );
 
-        foreach ($expected as $logEntry) {
+        foreach ($expectedOnResume as $logEntry) {
             $this->assertTrue($handler->hasInfo($logEntry));
         }
     }
@@ -139,6 +145,10 @@ class ManualB extends User
 {
     public function execute(TokenInterface $token)
     {
+        if (!$token->getData('breaking_condition')) {
+            return false;
+        }
+
         return true;
     }
 

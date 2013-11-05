@@ -13,6 +13,7 @@ class Token implements TokenInterface
 {
     protected $data;
     protected $location;
+    protected $status;
 
     /**
      * {@inheritdoc}
@@ -52,5 +53,21 @@ class Token implements TokenInterface
     public function getLocation()
     {
         return $this->location;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param mixed $status
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
     }
 }

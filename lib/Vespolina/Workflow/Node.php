@@ -66,18 +66,10 @@ class Node implements NodeInterface
         $this->tokens[] = $token;
         $token->setLocation($this);
 
-        try {
-            $success = $this->preExecute($token);
-            $success = $success && $this->execute($token);
-            $success = $success && $this->postExecute($token);
-            $success = $success && $this->cleanUp($token);
-        } catch (\Exception $e) {
-            if ($e instanceof ProcessingFailureException) {
-                $this->workflow->addError($e->getMessage());
-            }
-
-            $success = false;
-        }
+        $success = $this->runStep($token, 'preExecute');
+        $success = $success && $this->runStep($token, 'execute');
+        $success = $success && $this->runStep($token, 'postExecute');
+        $success = $success && $this->runStep($token, 'cleanUp');
 
         return $success;
     }
@@ -87,9 +79,14 @@ class Node implements NodeInterface
      */
     public function resume(TokenInterface $token)
     {
-        $message = 'Token resuming into ' . $this->getName();
+        $message = 'Token resuming in ' . $this->getName();
         $this->logger->info($message, array('token' => $token));
-        $token->setLocation($this);
+
+        if ($token->getStatus() === 'preExecute') {
+
+        }
+
+        if ($token->getStatus() === 'preExecute') {
 
         try {
             $success = $this->preExecute($token);
@@ -231,5 +228,22 @@ class Node implements NodeInterface
         }
 
         return false;
+    }
+
+    private function runStep(TokenInterface $token, $stepName)
+    {
+        $token->setStatus($stepName);
+
+        try {
+            $success = $this->$stepName($token);
+        } catch (\Exception $e) {
+            if ($e instanceof ProcessingFailureException) {
+                $this->workflow->addError($e->getMessage());
+            }
+
+            $success = false;
+        }
+
+        return $success;
     }
 }

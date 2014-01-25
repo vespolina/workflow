@@ -10,6 +10,7 @@
 namespace Vespolina\Workflow;
 
 use Psr\Log\LoggerInterface;
+use Vespolina\Workflow\TransactionInterface;
 
 class Workflow
 {
@@ -75,6 +76,28 @@ class Workflow
         }
 
         return $this->createArc($from, $to);
+    }
+
+    /**
+     * @param TransactionInterface $from
+     * @param TransactionInterface $to
+     *
+     * @return PlaceInterface
+     */
+    public function connectThroughPlace(TransactionInterface $from, TransactionInterface $to)
+    {
+        $place = new Place();
+
+        if (!in_array($from, $this->nodes)) {
+            $this->addNode($from);
+        }
+        if (!in_array($to, $this->nodes)) {
+            $this->addNode($to);
+        }
+        $this->createArc($from, $place);
+        $this->createArc($place, $to);
+
+        return $place;
     }
 
     public function connectToStart(TransactionInterface $tokenable)

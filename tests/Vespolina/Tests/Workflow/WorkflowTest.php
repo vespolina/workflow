@@ -66,6 +66,21 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $this->assertNotContains($token2, $workflow->getTokens());
     }
 
+    public function testConnectThroughPlace()
+    {
+        $trans1 = WorkflowCommon::createTransaction();
+        $trans1->setName('trans1');
+        $trans2 = WorkflowCommon::createTransaction();
+        $trans2->setName('trans2');
+        $workflow = WorkflowCommon::createWorkflow();
+
+        $place = $workflow->connectThroughPlace($trans1, $trans2);
+        $this->assertInstanceOf('Vespolina\Workflow\PlaceInterface', $place, 'a place should have been created and returned');
+        $nodes = $workflow->getNodes();
+        $this->assertTrue(in_array($trans1, $nodes), 'the from should have been added to the nodes');
+        $this->assertTrue(in_array($trans2, $nodes), 'the to should have been added to the nodes');
+    }
+
     public function testCreateToken()
     {
         $workflow = WorkflowCommon::createWorkflow();

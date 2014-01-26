@@ -22,5 +22,10 @@
     "config": {
         "bin-dir": "bin"
     },
-    "autoload": {"psr-0": {"Vespolina": "lib/"}}
+    "autoload": {
+        "psr-0": {
+            "Vespolina": "lib/",
+            "Vespolina\\Tests": "tests/"
+        }
+    }
 }

@@ -17,5 +17,3 @@ php composer.phar install
 EOT
     );
 }
-
-$loader->add('Vespolina\\Tests', __DIR__ . '/../tests');

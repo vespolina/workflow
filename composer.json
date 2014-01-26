@@ -15,8 +15,12 @@
         "psr/log": "1.0.0"
     },
     "require-dev": {
+        "bernard/bernard": ">=0.11.0,<1.0.0",
         "phpspec/phpspec": "2.0.*@dev",
         "monolog/monolog": "1.6.*"
+    },
+    "suggest": {
+        "bernard/bernard": ">=0.11.0,<1.0.0"
     },
     "minimum-stability": "dev",
     "config": {

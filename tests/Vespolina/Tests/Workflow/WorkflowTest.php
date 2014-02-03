@@ -77,6 +77,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $place = $workflow->connectThroughPlace($trans1, $trans2);
         $this->assertInstanceOf('Vespolina\Workflow\PlaceInterface', $place, 'a place should have been created and returned');
         $nodes = $workflow->getNodes();
+        $this->assertTrue(in_array($place, $nodes), 'the place should have been added to the nodes');
         $this->assertTrue(in_array($trans1, $nodes), 'the from should have been added to the nodes');
         $this->assertTrue(in_array($trans2, $nodes), 'the to should have been added to the nodes');
     }

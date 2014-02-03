@@ -87,6 +87,7 @@ class Workflow
     public function connectThroughPlace(TransactionInterface $from, TransactionInterface $to)
     {
         $place = new Place();
+        $this->addNode($place);
 
         if (!in_array($from, $this->nodes)) {
             $this->addNode($from);

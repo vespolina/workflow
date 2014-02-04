@@ -2,8 +2,8 @@
 
 namespace Vespolina\Workflow\Task;
 
-use Bernard\Message\DefaultMessage;
 use Bernard\Producer;
+use Vespolina\Workflow\Message\BernardTokenMessage;
 use Vespolina\Workflow\TokenInterface;
 
 abstract class BernardQueue extends Queue
@@ -18,7 +18,7 @@ abstract class BernardQueue extends Queue
     public function execute(TokenInterface $token)
     {
         $queue = $this->getQueueName();
-        $this->producer->produce(new DefaultMessage($queue, ['token' => $token]), $queue);
+        $this->producer->produce(new BernardTokenMessage($queue, $token), $queue);
 
         return true;
     }

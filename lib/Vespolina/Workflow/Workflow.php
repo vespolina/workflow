@@ -155,7 +155,7 @@ class Workflow
         $success = true;
         foreach ($outputs as $output) {
             $newToken = clone $token;
-            $node->addToken($newToken);
+            $this->addToken($newToken);
             $success = $success && $output->accept($newToken);
         }
         $this->removeToken($token);

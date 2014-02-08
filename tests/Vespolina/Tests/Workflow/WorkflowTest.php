@@ -12,6 +12,8 @@ namespace Vespolina\Tests\Workflow;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Vespolina\Tests\WorkflowCommon;
+use Vespolina\Workflow\Node;
+use Vespolina\Workflow\TokenInterface;
 
 class WorkflowTest extends \PHPUnit_Framework_TestCase
 {
@@ -98,6 +100,69 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($object, $token->getData('object'), 'the object should be returned');
     }
 
+    public function testFinalizeSingleArc()
+    {
+        $logger = new Logger('test');
+        $workflow = WorkflowCommon::createWorkflow($logger);
+        $tokenable = new ExtendedTokenable();
+        $tokenable->setWorkflow($workflow, $logger);
+        $token = WorkflowCommon::createToken();
+        $tokenable->addToken($token);
+        $workflow->addToken($token);
+        $outArc = $this->getMock('Vespolina\Workflow\Arc', array('accept'));
+        $outArc->expects($this->once())
+            ->method('accept')
+            ->will($this->returnValue(true));
+        $outArc->setFrom($tokenable);
+
+        $this->assertTrue($workflow->finalize($tokenable, $token));
+        $this->assertCount(1, $workflow->getTokens());
+        $this->assertNotContains($token, $tokenable->getTokens(), 'the token should not longer be in tokenable');
+    }
+
+    public function testFinalizeMultipleArcs()
+    {
+        $logger = new Logger('test');
+        $workflow = WorkflowCommon::createWorkflow($logger);
+        $tokenable = new ExtendedTokenable();
+        $tokenable->setWorkflow($workflow, $logger);
+        $token = WorkflowCommon::createToken();
+        $tokenable->addToken($token);
+        $workflow->addToken($token);
+
+        $place1 = WorkflowCommon::createPlace();
+        $place1->setWorkflow($workflow, $logger);
+        $arc1 = $this->getMock('Vespolina\Workflow\Arc', array('getExpectedInterface'));
+        $arc1->expects($this->any())
+            ->method('getExpectedInterface')
+            ->will($this->returnValue('Vespolina\Workflow\PlaceInterface'));
+        $arc1->setFrom($tokenable);
+        $arc1->setTo($place1);
+
+        $place2 = WorkflowCommon::createPlace();
+        $place2->setWorkflow($workflow, $logger);
+        $arc2 = $this->getMock('Vespolina\Workflow\Arc', array('getExpectedInterface'));
+        $arc2->expects($this->any())
+            ->method('getExpectedInterface')
+            ->will($this->returnValue('Vespolina\Workflow\PlaceInterface'));
+        $arc2->setFrom($tokenable);
+        $arc2->setTo($place2);
+
+        $this->assertTrue($workflow->finalize($tokenable, $token));
+
+        $outputTokens = array_merge($place1->getTokens(), $place2->getTokens());
+        foreach ($outputTokens as $curToken) {
+            $this->assertNotSame($token, $curToken, 'the token should be a clone');
+        }
+
+        $this->assertNotContains($token, $tokenable->getTokens(), 'the token should not longer be in tokenable');
+        $this->assertCount(2, $workflow->getTokens());
+        foreach ($workflow->getTokens() as $workflowToken) {
+            $this->assertNotSame($token, $workflowToken, 'the tokens should be clones');
+            $this->assertContains($workflowToken, $outputTokens, 'the workflow tokens should also be the same token in the arc "to"');
+        }
+    }
+
     public function testValidateWorkflowValidOutputs()
     {
         $logger = new Logger('test');
@@ -152,5 +217,13 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         foreach ($expected as $logEntry) {
             $this->assertTrue($handler->hasInfo($logEntry));
         }
+    }
+}
+
+class ExtendedTokenable extends Node
+{
+    public function addToken(TokenInterface $token)
+    {
+        $this->tokens[] = $token;
     }
 }

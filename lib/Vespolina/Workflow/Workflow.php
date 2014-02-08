@@ -43,11 +43,8 @@ class Workflow
     {
         $this->addToken($token);
         $this->logger->info('Token accepted into workflow', array('token' => $token));
-        if ($this->getStart()->accept($token)) {
-            return true;
-        }
 
-        return false;
+        return $this->advanceToken($this->getStart(), $token);
     }
 
     /**
@@ -148,7 +145,7 @@ class Workflow
         // single out, no token clone, just update the node location
         if (sizeof($outputs) == 1) {
             $output = array_shift($outputs);
-            return $output->accept($token);
+            return $this->advanceToken($output->to, $token);
         }
 
         // multiple outs, clone for each path, remove original token
@@ -156,7 +153,7 @@ class Workflow
         foreach ($outputs as $output) {
             $newToken = clone $token;
             $this->addToken($newToken);
-            $success = $success && $output->accept($newToken);
+            $success = $success && $this->advanceToken($output->to, $newToken);
         }
         $this->removeToken($token);
 
@@ -278,5 +275,15 @@ class Workflow
         $step++;
 
         return $step;
+    }
+
+    protected function advanceToken($node, $token)
+    {
+        $message = 'Token advanced into ' . $node->getName();
+        $this->logger->info($message, array('token' => $token));
+        $token->setLocation($node);
+        $node->setWorkflow($this, $this->logger);
+
+        return $node->accept($token);
     }
 }

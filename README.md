@@ -66,9 +66,9 @@ And we will see the traversing in our logs:
 
 ```cli
 ... test.INFO: Token accepted into workflow
-... test.INFO: Token accepted into workflow.start
-... test.INFO: Token accepted into Vespolina\Workflow\Task\Automatic
-... test.INFO: Token accepted into Vespolina\Workflow\Place
-... test.INFO: Token accepted into Vespolina\Workflow\Task\Automatic
-... test.INFO: Token accepted into workflow.finish
+... test.INFO: Token advanced into workflow.start
+... test.INFO: Token advanced into Vespolina\Workflow\Task\Automatic
+... test.INFO: Token advanced into Vespolina\Workflow\Place
+... test.INFO: Token advanced into Vespolina\Workflow\Task\Automatic
+... test.INFO: Token advanced into workflow.finish
 ```

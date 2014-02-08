@@ -42,14 +42,14 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
 
         $expected = array(
             'Token accepted into workflow',
-            'Token accepted into workflow.start',
-            'Token accepted into Vespolina\Tests\Functional\AutoA',
-            'Token accepted into Vespolina\Workflow\Place',
-            'Token accepted into Vespolina\Tests\Functional\AutoB',
-            'Token accepted into workflow.finish',
+            'Token advanced into workflow.start',
+            'Token advanced into Vespolina\Tests\Functional\AutoA',
+            'Token advanced into Vespolina\Workflow\Place',
+            'Token advanced into Vespolina\Tests\Functional\AutoB',
+            'Token advanced into workflow.finish',
         );
         foreach ($expected as $logEntry) {
-            $this->assertTrue($handler->hasInfo($logEntry));
+            $this->assertTrue($handler->hasInfo($logEntry), "failed log entry $logEntry");
         }
     }
 }

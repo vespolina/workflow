@@ -11,8 +11,8 @@ namespace Vespolina\Workflow;
 
 class Arc implements ArcInterface
 {
-    protected $from;
-    protected $to;
+    public $from;
+    public $to;
     protected $name;
 
     /**

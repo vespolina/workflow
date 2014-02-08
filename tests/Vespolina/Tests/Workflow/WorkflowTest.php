@@ -12,15 +12,17 @@ namespace Vespolina\Tests\Workflow;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Vespolina\Tests\WorkflowCommon;
+use Vespolina\Workflow\Arc;
 use Vespolina\Workflow\Node;
 use Vespolina\Workflow\TokenInterface;
+use Vespolina\Workflow\Transaction;
 
 class WorkflowTest extends \PHPUnit_Framework_TestCase
 {
     public function testAccept()
     {
         $logger = $this->getMock('Monolog\Logger', array('info'), array('test'));
-        $logger->expects($this->once())
+        $logger->expects($this->exactly(2))
             ->method('info');
         $workflow = WorkflowCommon::createWorkflow($logger);
         $input = $this->getMock('Vespolina\Workflow\Place', array('accept'));
@@ -104,16 +106,14 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
     {
         $logger = new Logger('test');
         $workflow = WorkflowCommon::createWorkflow($logger);
-        $tokenable = new ExtendedTokenable();
+        $tokenable = new ExtendedTransaction();
         $tokenable->setWorkflow($workflow, $logger);
         $token = WorkflowCommon::createToken();
         $tokenable->addToken($token);
         $workflow->addToken($token);
-        $outArc = $this->getMock('Vespolina\Workflow\Arc', array('accept'));
-        $outArc->expects($this->once())
-            ->method('accept')
-            ->will($this->returnValue(true));
+        $outArc = new Arc();
         $outArc->setFrom($tokenable);
+        $outArc->setTo(WorkflowCommon::createPlace());
 
         $this->assertTrue($workflow->finalize($tokenable, $token));
         $this->assertCount(1, $workflow->getTokens());
@@ -124,7 +124,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
     {
         $logger = new Logger('test');
         $workflow = WorkflowCommon::createWorkflow($logger);
-        $tokenable = new ExtendedTokenable();
+        $tokenable = new ExtendedTransaction();
         $tokenable->setWorkflow($workflow, $logger);
         $token = WorkflowCommon::createToken();
         $tokenable->addToken($token);
@@ -220,7 +220,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
     }
 }
 
-class ExtendedTokenable extends Node
+class ExtendedTransaction extends Transaction
 {
     public function addToken(TokenInterface $token)
     {

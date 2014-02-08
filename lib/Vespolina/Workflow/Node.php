@@ -61,10 +61,7 @@ class Node implements NodeInterface
      */
     public function accept(TokenInterface $token)
     {
-        $message = 'Token accepted into ' . $this->getName();
-        $this->logger->info($message, array('token' => $token));
         $this->tokens[] = $token;
-        $token->setLocation($this);
 
         $success = true;
         try {

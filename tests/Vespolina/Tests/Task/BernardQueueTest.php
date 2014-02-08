@@ -44,7 +44,7 @@ class BernardQueueTest extends \PHPUnit_Framework_TestCase
 
         $envelope = $this->queues->create('TestQueue')->dequeue();
         $message = $envelope->getMessage();
-        $this->assertEquals($token, $message->token);
+        $this->assertEquals($token, $message->getToken());
         $this->queues->create('TestQueue')->enqueue($envelope);
 
         $this->router = new SimpleRouter(['TestQueue' => $task]);

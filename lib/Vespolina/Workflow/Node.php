@@ -79,6 +79,7 @@ class Node implements NodeInterface
 
             return false;
         }
+        $this->finalize($token);
 
         return $success;
     }
@@ -131,6 +132,23 @@ class Node implements NodeInterface
         return $this->tokens;
     }
 
+    /**
+     * Remove a token from the collection of tokens
+     *
+     * @param TokenInterface $token
+     * @return boolean
+     */
+    public function removeToken(TokenInterface $token)
+    {
+        foreach ($this->tokens as $key => $curToken) {
+            if ($token === $curToken) {
+                unset($this->tokens[$key]);
+
+                return true;
+            }
+        }
+    }
+
     protected function cleanUp(TokenInterface $token)
     {
         return true;
@@ -148,42 +166,6 @@ class Node implements NodeInterface
 
     protected function finalize(TokenInterface $token)
     {
-        if (!$outputs = $this->getOutputs()) {
-            return true;
-        }
-        $this->removeToken($token);
-        // single out, no token clone, just update the node location
-        if (sizeof($outputs) == 1) {
-            $output = array_shift($outputs);
-            return $output->accept($token);
-        }
-
-        // multiple outs, clone for each path, remove original token
-        $success = true;
-        foreach ($outputs as $output) {
-            $newToken = clone $token;
-            $this->workflow->addToken($newToken);
-            $success = $success && $output->accept($newToken);
-        }
-        $this->workflow->removeToken($token);
-
-        return $success;
-    }
-
-    /**
-     * Remove a token from the collection of tokens
-     *
-     * @param TokenInterface $token
-     * @return boolean
-     */
-    protected function removeToken(TokenInterface $token)
-    {
-        foreach ($this->tokens as $key => $curToken) {
-            if ($token === $curToken) {
-                unset($this->tokens[$key]);
-
-                return true;
-            }
-        }
+        return $this->workflow->finalize($this, $token);
     }
 }

@@ -139,6 +139,30 @@ class Workflow
         return $token;
     }
 
+    public function finalize($node, $token)
+    {
+        if (!$outputs = $node->getOutputs()) {
+            return true;
+        }
+        $node->removeToken($token);
+        // single out, no token clone, just update the node location
+        if (sizeof($outputs) == 1) {
+            $output = array_shift($outputs);
+            return $output->accept($token);
+        }
+
+        // multiple outs, clone for each path, remove original token
+        $success = true;
+        foreach ($outputs as $output) {
+            $newToken = clone $token;
+            $node->addToken($newToken);
+            $success = $success && $output->accept($newToken);
+        }
+        $this->removeToken($token);
+
+        return $success;
+    }
+
     public function getStart()
     {
         return $this->start;

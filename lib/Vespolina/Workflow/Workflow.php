@@ -167,7 +167,6 @@ class Workflow
 
     public function addNode(NodeInterface $node)
     {
-        $node->setWorkflow($this, $this->logger);
         $this->nodes[] = $node;
     }
 

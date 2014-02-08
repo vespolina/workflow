@@ -41,13 +41,6 @@ class WorkflowSpec extends ObjectBehavior
         ;
     }
 
-    function it_should_add_a_node(Node $node, Logger $logger)
-    {
-        $this->addNode($node);
-        $this->getNodes()->shouldContainNode($node);
-        $node->setWorkflow($this, $logger)->shouldHaveBeenCalled();
-    }
-
     /**
      * @param \Vespolina\Workflow\Place $place
      * @param \Vespolina\Workflow\Task\Automatic $transaction

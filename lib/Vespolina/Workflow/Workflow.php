@@ -26,11 +26,9 @@ class Workflow
     {
         $this->logger = $logger;
         $this->start = new Place();
-        $this->start->setName('workflow.start');
-        $this->addNode($this->start);
+        $this->addNode($this->start, 'workflow.start');
         $this->finish = new Place();
-        $this->finish->setName('workflow.finish');
-        $this->addNode($this->finish);
+        $this->addNode($this->finish, 'workflow.finish');
     }
 
     /**
@@ -57,22 +55,36 @@ class Workflow
         return $this->arcs;
     }
 
-    public function connect(NodeInterface $from, NodeInterface $to)
+    /**
+     * @param string $fromLabel
+     * @param string $toLabel
+     * @return Arc
+     * @throws \InvalidArgumentException
+     */
+    public function connect($fromLabel, $toLabel)
     {
-        if ($from instanceof PlaceInterface && $to instanceof PlaceInterface) {
+        if (!isset($this->nodes[$fromLabel])) {
+            throw new \InvalidArgumentException("There is no node with the label $fromLabel");
+        }
+        if (!isset($this->nodes[$toLabel])) {
+            throw new \InvalidArgumentException("There is no node with the label $toLabel");
+        }
+        $fromNode = $this->nodes[$fromLabel];
+        $toNode = $this->nodes[$toLabel];
+        if ($fromNode instanceof PlaceInterface && $toNode instanceof PlaceInterface) {
             throw new \InvalidArgumentException('You can only connect a Vespolina\Workflow\TransactionInterface to a Vespolina\Workflow\PlaceInterface');
         }
-        if ($from instanceof TransactionInterface && $to instanceof TransactionInterface) {
+        if ($fromNode instanceof TransactionInterface && $toNode instanceof TransactionInterface) {
             throw new \InvalidArgumentException('You can only connect a Vespolina\Workflow\PlaceInterface to a Vespolina\Workflow\TransactionInterface');
         }
-        if (!in_array($from, $this->nodes)) {
-            $this->addNode($from);
-        }
-        if (!in_array($to, $this->nodes)) {
-            $this->addNode($to);
-        }
 
-        return $this->createArc($from, $to);
+        $arc = new Arc();
+        $arc->from = $fromLabel;
+        $arc->to = $toLabel;
+        $this->arcs[] = $arc;
+
+        $fromNode->addOutput($arc);
+        $toNode->addInput($arc);
     }
 
     /**
@@ -92,13 +104,13 @@ class Workflow
         if (!in_array($to, $this->nodes)) {
             $this->addNode($to);
         }
-        $this->createArc($from, $place);
-        $this->createArc($place, $to);
+        $this->connect($from, $place);
+        $this->connect($place, $to);
 
         return $place;
     }
 
-    public function connectToStart(TransactionInterface $tokenable)
+    public function connectToStart(TransactionInterface $tokenable, $name = null)
     {
         if (!in_array($tokenable, $this->nodes)) {
             $this->addNode($tokenable);
@@ -114,16 +126,6 @@ class Workflow
         }
 
         return $this->createArc($tokenable, $this->finish);
-    }
-
-    public function createArc(NodeInterface $from, NodeInterface $to)
-    {
-        $arc = new Arc();
-        $arc->setFrom($from);
-        $arc->setTo($to);
-        $this->addArc($arc);
-
-        return $arc;
     }
 
     public function createToken(array $data = array())
@@ -165,14 +167,9 @@ class Workflow
         return $this->start;
     }
 
-    public function addNode(NodeInterface $node)
+    public function addNode(NodeInterface $node, $label)
     {
-        $this->nodes[] = $node;
-    }
-
-    public function addArc($arc)
-    {
-        $this->arcs[] = $arc;
+        $this->nodes[$label] = $node;
     }
 
     public function getNodes()

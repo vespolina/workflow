@@ -19,6 +19,16 @@ use Vespolina\Workflow\Transaction;
 
 class WorkflowTest extends \PHPUnit_Framework_TestCase
 {
+
+    public function testAddNode()
+    {
+        $workflow = WorkflowCommon::createWorkflow();
+        $place = WorkflowCommon::createPlace();
+        $workflow->addNode($place, 'p1');
+        $nodes = $workflow->getNodes();
+        $this->assertSame($place, $nodes['p1']);
+    }
+
     public function testAccept()
     {
         $logger = $this->getMock('Monolog\Logger', array('info'), array('test'));
@@ -47,14 +57,6 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('error 2', $errors);
     }
 
-    public function testAddArcNode()
-    {
-        $workflow = WorkflowCommon::createWorkflow();
-        $arc = WorkflowCommon::createArc();
-        $workflow->addArc($arc);
-        $this->assertContains($arc, $workflow->getArcs());
-    }
-
     public function testRemoveToken()
     {
         $workflow = WorkflowCommon::createWorkflow();
@@ -68,6 +70,77 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
 
         $this->assertContains($token, $workflow->getTokens());
         $this->assertNotContains($token2, $workflow->getTokens());
+    }
+
+    /**
+     * @expectedException     \InvalidArgumentException
+     * @expectedExceptionMessage There is no node with the label no_place
+     */
+    public function testConnectMissingFromNode()
+    {
+        $workflow = WorkflowCommon::createWorkflow();
+        $workflow->connect('no_place', 'x');
+    }
+
+    /**
+     * @expectedException     \InvalidArgumentException
+     * @expectedExceptionMessage There is no node with the label no_transaction
+     */
+    public function testConnectMissingToNode()
+    {
+        $workflow = WorkflowCommon::createWorkflow();
+        $place = WorkflowCommon::createPlace();
+        $workflow->addNode($place, 'p1');
+        $workflow->connect('p1', 'no_transaction');
+    }
+
+    /**
+     * @expectedException     \InvalidArgumentException
+     * @expectedExceptionMessage You can only connect a Vespolina\Workflow\TransactionInterface to a Vespolina\Workflow\PlaceInterface
+     */
+    public function testConnectTwoPlaceNodes()
+    {
+        $workflow = WorkflowCommon::createWorkflow();
+        $place = WorkflowCommon::createPlace();
+        $workflow->addNode($place, 'p1');
+        $place2 = WorkflowCommon::createPlace();
+        $workflow->addNode($place2, 'p2');
+        $workflow->connect('p1', 'p2');
+    }
+
+    /**
+     * @expectedException     \InvalidArgumentException
+     * @expectedExceptionMessage You can only connect a Vespolina\Workflow\PlaceInterface to a Vespolina\Workflow\TransactionInterface
+     */
+    public function testConnectTwoTransactionPlaceNodes()
+    {
+        $workflow = WorkflowCommon::createWorkflow();
+        $transaction = WorkflowCommon::createTransaction();
+        $workflow->addNode($transaction, 't1');
+        $transaction2 = WorkflowCommon::createTransaction();
+        $workflow->addNode($transaction2, 't2');
+        $workflow->connect('t1', 't2');
+    }
+
+    public function testConnect()
+    {
+        $workflow = WorkflowCommon::createWorkflow();
+        $place = WorkflowCommon::createPlace();
+        $workflow->addNode($place, 'p1');
+        $transaction = WorkflowCommon::createTransaction();
+        $workflow->addNode($transaction, 't1');
+        $workflow->connect('p1', 't1');
+        $arcs = $workflow->getArcs();
+        $this->assertCount(1, $arcs, 'there should only be one arc');
+        $arc = array_shift($arcs);
+        $this->assertSame('p1', $arc->from, 'the place should be set as the from in the arc');
+        $this->assertSame('t1', $arc->to, 'the transaction should be set as the to in the arc');
+        $placeOutputs = $place->getOutputs();
+        $this->assertCount(1, $placeOutputs, 'the place should only have one output');
+        $this->assertSame($arc, array_shift($placeOutputs), 'the output should be the new arc');
+        $transactionInputs = $transaction->getInputs();
+        $this->assertCount(1, $transactionInputs, 'the transaction should only have one input');
+        $this->assertSame($arc, array_shift($transactionInputs), 'the input should be the new arc');
     }
 
     public function testConnectThroughPlace()

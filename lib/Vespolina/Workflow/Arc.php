@@ -9,11 +9,10 @@
 
 namespace Vespolina\Workflow;
 
-class Arc implements ArcInterface
+class Arc
 {
     public $from;
     public $to;
-    protected $name;
 
     /**
      * {@inheritdoc}
@@ -30,16 +29,17 @@ class Arc implements ArcInterface
     /**
      * {@inheritdoc}
      */
-    public function setFrom(NodeInterface $tokenable)
+    public function setFrom(array $from)
     {
+        $this->from = $from['label'];
+        $node = $from['node'];
         if (isset($this->to)) {
             $expectedInterface = $this->getExpectedInterface($this->to);
-            if (!$tokenable instanceof $expectedInterface) {
+            if (!$node instanceof $expectedInterface) {
                 throw new \InvalidArgumentException('The "from" node should be an instance of ' . $expectedInterface);
             }
         }
-        $tokenable->addOutput($this);
-        $this->from = $tokenable;
+        $node->addOutput($this);
     }
 
     /**
@@ -55,8 +55,10 @@ class Arc implements ArcInterface
     /**
      * {@inheritdoc}
      */
-    public function setTo(NodeInterface $tokenable)
+    public function setTo(array $to)
     {
+        $this->to = $to['label'];
+        $node = $to['node'];
         if (isset($this->from)) {
             $expectedInterface = $this->getExpectedInterface($this->from);
             if (!$tokenable instanceof $expectedInterface) {
@@ -64,7 +66,6 @@ class Arc implements ArcInterface
             }
         }
         $tokenable->addInput($this);
-        $this->to = $tokenable;
     }
 
     /**
@@ -84,15 +85,5 @@ class Arc implements ArcInterface
         }
 
         return 'Vespolina\Workflow\TransactionInterface';
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-
-    public function getName()
-    {
-        return $this->name;
     }
 }

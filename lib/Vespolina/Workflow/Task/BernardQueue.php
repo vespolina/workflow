@@ -10,9 +10,10 @@ abstract class BernardQueue extends Queue
 {
     protected $producer;
 
-    public function __construct(Producer $producer)
+    public function __construct(Workflow $workflow, Producer $producer)
     {
         $this->producer = $producer;
+        $this->workflow = $workflow;
     }
 
     public function execute(TokenInterface $token)

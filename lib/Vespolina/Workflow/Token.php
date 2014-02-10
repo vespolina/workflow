@@ -46,7 +46,7 @@ class Token implements TokenInterface
     /**
      * {@inheritdoc}
      */
-    public function setLocation(NodeInterface $location)
+    public function setLocation($location)
     {
         $this->location = $location;
 

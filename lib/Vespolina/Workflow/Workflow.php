@@ -16,10 +16,8 @@ class Workflow
 {
     protected $arcs;
     protected $errors;
-    protected $finish;
     protected $logger;
     protected $nodes;
-    protected $start;
     protected $tokens;
 
     public function __construct(LoggerInterface $logger)
@@ -42,7 +40,7 @@ class Workflow
         $this->addToken($token);
         $this->logger->info('Token accepted into workflow', array('token' => $token));
 
-        return $this->advanceToken($this->getStart(), $token);
+        return $this->advanceToken('workflow.start', $token);
     }
 
     /**
@@ -88,44 +86,31 @@ class Workflow
     }
 
     /**
-     * @param TransactionInterface $from
-     * @param TransactionInterface $to
+     * @param string $fromLabel
+     * @param string $toLabel
      *
      * @return PlaceInterface
      */
-    public function connectThroughPlace(TransactionInterface $from, TransactionInterface $to)
+    public function connectThroughPlace($fromLabel, $toLabel)
     {
         $place = new Place();
-        $this->addNode($place);
+        $placeLabel = 'place_post_' . $fromLabel;
+        $this->addNode($place, $placeLabel);
 
-        if (!in_array($from, $this->nodes)) {
-            $this->addNode($from);
-        }
-        if (!in_array($to, $this->nodes)) {
-            $this->addNode($to);
-        }
-        $this->connect($from, $place);
-        $this->connect($place, $to);
+        $this->connect($fromLabel, $placeLabel);
+        $this->connect($placeLabel, $toLabel);
 
         return $place;
     }
 
-    public function connectToStart(TransactionInterface $tokenable, $name = null)
+    public function connectToStart($label)
     {
-        if (!in_array($tokenable, $this->nodes)) {
-            $this->addNode($tokenable);
-        }
-
-        return $this->createArc($this->start, $tokenable);
+        $this->connect('workflow.start', $label);
     }
 
-    public function connectToFinish(TransactionInterface $tokenable)
+    public function connectToFinish($label)
     {
-        if (!in_array($tokenable, $this->nodes)) {
-            $this->addNode($tokenable);
-        }
-
-        return $this->createArc($tokenable, $this->finish);
+        $this->connect($label, 'workflow.start');
     }
 
     public function createToken(array $data = array())
@@ -162,11 +147,6 @@ class Workflow
         return $success;
     }
 
-    public function getStart()
-    {
-        return $this->start;
-    }
-
     public function addNode(NodeInterface $node, $label)
     {
         $this->nodes[$label] = $node;
@@ -175,11 +155,6 @@ class Workflow
     public function getNodes()
     {
         return $this->nodes;
-    }
-
-    public function getFinish()
-    {
-        return $this->finish;
     }
 
     public function addError($error)
@@ -226,7 +201,7 @@ class Workflow
     public function validateWorkflow()
     {
         $this->currentValidationStep('reset');
-        $startingNode = $this->getStart();
+        $startingNode = $this->nodes['workflow.start'];
         $success = $this->traverseNext($startingNode);
 
         return $success;
@@ -236,7 +211,7 @@ class Workflow
     {
         $this->logger->info(sprintf('Node %s reached, step %s', $node->getName(), $this->currentValidationStep()), array('node' => $node));
 
-        if ($node == $this->getFinish()) {
+        if ($node == $this->nodes['workflow.finish']) {
             return true;
         }
         if (!$arcs = $node->getOutputs()) {
@@ -273,11 +248,12 @@ class Workflow
         return $step;
     }
 
-    protected function advanceToken($node, $token)
+    protected function advanceToken($location, $token)
     {
-        $message = 'Token advanced into ' . $node->getName();
+        $message = "Token advanced into $location";
         $this->logger->info($message, array('token' => $token));
-        $token->setLocation($node);
+        $token->setLocation($location);
+        $node = $this->nodes[$location];
         $node->setWorkflow($this, $this->logger);
 
         return $node->accept($token);

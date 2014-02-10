@@ -39,9 +39,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $input->expects($this->once())
             ->method('accept')
             ->will($this->returnValue(true));
-        $rp = new \ReflectionProperty($workflow, 'start');
-        $rp->setAccessible(true);
-        $rp->setValue($workflow, $input);
+        $workflow->addNode($input, 'workflow.start');
         $token = WorkflowCommon::createToken();
         $workflow->accept($token);
         $this->assertContains($token, $workflow->getTokens(), '');
@@ -136,7 +134,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('p1', $arc->from, 'the place should be set as the from in the arc');
         $this->assertSame('t1', $arc->to, 'the transaction should be set as the to in the arc');
         $placeOutputs = $place->getOutputs();
-        $this->assertCount(1, $placeOutputs, 'the place should only have one output');
+        $this->assertCount(1, $placeOutputs, 'the place should only have  one output');
         $this->assertSame($arc, array_shift($placeOutputs), 'the output should be the new arc');
         $transactionInputs = $transaction->getInputs();
         $this->assertCount(1, $transactionInputs, 'the transaction should only have one input');
@@ -145,18 +143,32 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
 
     public function testConnectThroughPlace()
     {
-        $trans1 = WorkflowCommon::createTransaction();
-        $trans1->setName('trans1');
-        $trans2 = WorkflowCommon::createTransaction();
-        $trans2->setName('trans2');
         $workflow = WorkflowCommon::createWorkflow();
+        $trans1 = WorkflowCommon::createTransaction();
+        $workflow->addNode($trans1, 'trans1');
+        $trans2 = WorkflowCommon::createTransaction();
+        $workflow->addNode($trans2, 'trans2');
 
-        $place = $workflow->connectThroughPlace($trans1, $trans2);
+        $place = $workflow->connectThroughPlace('trans1', 'trans2');
         $this->assertInstanceOf('Vespolina\Workflow\PlaceInterface', $place, 'a place should have been created and returned');
         $nodes = $workflow->getNodes();
-        $this->assertTrue(in_array($place, $nodes), 'the place should have been added to the nodes');
-        $this->assertTrue(in_array($trans1, $nodes), 'the from should have been added to the nodes');
-        $this->assertTrue(in_array($trans2, $nodes), 'the to should have been added to the nodes');
+        $this->assertSame($place, $nodes['place_post_trans1'], 'the place should have been added to the nodes');
+        $arcs = $workflow->getArcs();
+        $this->assertCount(2, $arcs, 'there should be two arcs');
+
+        $trans1Output = $trans1->getOutputs();
+        $trans1Arc = array_shift($trans1Output);
+        $this->assertContains($trans1Arc, $arcs, 'the output arc should be in the workflow arcs');
+        $this->assertSame('place_post_trans1', $trans1Arc->to, 'the arc should connect to the place');
+        $placeInputs = $place->getInputs();
+        $this->assertSame($trans1Arc, array_shift($placeInputs), 'the place input should have the same arc ');
+
+        $trans2Output = $trans2->getInputs();
+        $trans2Arc = array_shift($trans2Output);
+        $this->assertContains($trans2Arc, $arcs, 'the output arc should be in the workflow arcs');
+        $this->assertSame('place_post_trans1', $trans2Arc->from, 'the arc should connect to the place');
+        $placeOutputs = $place->getOutputs();
+        $this->assertSame($trans2Arc, array_shift($placeOutputs), 'the place input should have the same arc ');
     }
 
     public function testCreateToken()
@@ -182,11 +194,12 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $tokenable = new ExtendedTransaction();
         $tokenable->setWorkflow($workflow, $logger);
         $token = WorkflowCommon::createToken();
+        $workflow->addNode($tokenable, 'transaction');
+        $place = WorkflowCommon::createPlace();
+        $workflow->addNode($place, 'place');
+        $workflow->connect('transaction', 'place');
         $tokenable->addToken($token);
         $workflow->addToken($token);
-        $outArc = new Arc();
-        $outArc->setFrom($tokenable);
-        $outArc->setTo(WorkflowCommon::createPlace());
 
         $this->assertTrue($workflow->finalize($tokenable, $token));
         $this->assertCount(1, $workflow->getTokens());
@@ -197,38 +210,29 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
     {
         $logger = new Logger('test');
         $workflow = WorkflowCommon::createWorkflow($logger);
-        $tokenable = new ExtendedTransaction();
-        $tokenable->setWorkflow($workflow, $logger);
-        $token = WorkflowCommon::createToken();
-        $tokenable->addToken($token);
-        $workflow->addToken($token);
+        $transaction = new ExtendedTransaction();
+        $workflow->addNode($transaction, 'transaction');
 
         $place1 = WorkflowCommon::createPlace();
-        $place1->setWorkflow($workflow, $logger);
-        $arc1 = $this->getMock('Vespolina\Workflow\Arc', array('getExpectedInterface'));
-        $arc1->expects($this->any())
-            ->method('getExpectedInterface')
-            ->will($this->returnValue('Vespolina\Workflow\PlaceInterface'));
-        $arc1->setFrom($tokenable);
-        $arc1->setTo($place1);
+        $workflow->addNode($place1, 'place1');
 
         $place2 = WorkflowCommon::createPlace();
-        $place2->setWorkflow($workflow, $logger);
-        $arc2 = $this->getMock('Vespolina\Workflow\Arc', array('getExpectedInterface'));
-        $arc2->expects($this->any())
-            ->method('getExpectedInterface')
-            ->will($this->returnValue('Vespolina\Workflow\PlaceInterface'));
-        $arc2->setFrom($tokenable);
-        $arc2->setTo($place2);
+        $workflow->addNode($place2, 'place2');
 
-        $this->assertTrue($workflow->finalize($tokenable, $token));
+        $workflow->connect('transaction', 'place1');
+        $workflow->connect('transaction', 'place2');
+        $token = WorkflowCommon::createToken();
+        $transaction->addToken($token);
+        $workflow->addToken($token);
+
+        $this->assertTrue($workflow->finalize($transaction, $token));
 
         $outputTokens = array_merge($place1->getTokens(), $place2->getTokens());
         foreach ($outputTokens as $curToken) {
             $this->assertNotSame($token, $curToken, 'the token should be a clone');
         }
 
-        $this->assertNotContains($token, $tokenable->getTokens(), 'the token should not longer be in tokenable');
+        $this->assertNotContains($token, $transaction->getTokens(), 'the token should not longer be in tokenable');
         $this->assertCount(2, $workflow->getTokens());
         foreach ($workflow->getTokens() as $workflowToken) {
             $this->assertNotSame($token, $workflowToken, 'the tokens should be clones');

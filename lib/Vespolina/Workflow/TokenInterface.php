@@ -31,10 +31,10 @@ interface TokenInterface
     /**
      * Set the location
      *
-     * @param NodeInterface $location
+     * @param string $location
      * @return $this
      */
-    function setLocation(NodeInterface $location);
+    function setLocation($location);
 
     /**
      * Return the location

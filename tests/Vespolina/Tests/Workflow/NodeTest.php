@@ -42,13 +42,8 @@ class NodeTest extends \PHPUnit_Framework_TestCase
         $workflow = WorkflowCommon::createWorkflow($logger);
         $token = WorkflowCommon::createToken();
         $tokenable = $this->getMock('Vespolina\Workflow\Node',
-            array('preExecute', 'execute', 'postExecute', 'cleanUp')
+            array('preExecute', 'execute', 'postExecute', 'cleanUp', 'finalize')
         );
-        $tokenable->setWorkflow($workflow, $logger);
-        $inArc = WorkflowCommon::createArc();
-        $inArc->setTo($tokenable);
-        $otherArc = WorkflowCommon::createArc();
-        $otherArc->setTo($tokenable);
 
         $tokenable->expects($this->once())
             ->method('preExecute')
@@ -61,6 +56,9 @@ class NodeTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(true));
         $tokenable->expects($this->once())
             ->method('cleanUp')
+            ->will($this->returnValue(true));
+        $tokenable->expects($this->once())
+            ->method('finalize')
             ->will($this->returnValue(true));
 
         $this->assertTrue($tokenable->accept($token));
@@ -77,10 +75,6 @@ class NodeTest extends \PHPUnit_Framework_TestCase
             array('preExecute')
         );
         $tokenable->setWorkflow($workflow, $logger);
-        $inArc = WorkflowCommon::createArc();
-        $inArc->setTo($tokenable);
-        $otherArc = WorkflowCommon::createArc();
-        $otherArc->setTo($tokenable);
 
         $tokenable->expects($this->once())
             ->method('preExecute')

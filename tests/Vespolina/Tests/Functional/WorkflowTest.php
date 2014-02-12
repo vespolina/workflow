@@ -29,12 +29,16 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
 
         // create sequence
         $a = new AutoA();
-        $workflow->connect($workflow->getStart(), $a);
-        $p = WorkflowCommon::createPlace($workflow, $logger);
-        $workflow->connect($a, $p);
+        $workflow->addNode($a, 'a');
+        $place = WorkflowCommon::createPlace();
+        $workflow->addNode($place, 'p1');
         $b = new AutoB();
-        $workflow->connect($p, $b);
-        $workflow->connect($b, $workflow->getFinish());
+        $workflow->addNode($b, 'b');
+
+        $workflow->connectToStart('a');
+        $workflow->connect('a', 'p1');
+        $workflow->connect('p1', 'b');
+        $workflow->connectToFinish('b');
 
         $token = WorkflowCommon::createToken();
 
@@ -43,9 +47,9 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $expected = array(
             'Token accepted into workflow',
             'Token advanced into workflow.start',
-            'Token advanced into Vespolina\Tests\Functional\AutoA',
-            'Token advanced into Vespolina\Workflow\Place',
-            'Token advanced into Vespolina\Tests\Functional\AutoB',
+            'Token advanced into a',
+            'Token advanced into p1',
+            'Token advanced into b',
             'Token advanced into workflow.finish',
         );
         foreach ($expected as $logEntry) {

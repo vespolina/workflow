@@ -116,7 +116,7 @@ class Workflow
 
     public function connectToFinish($label)
     {
-        $this->connect($label, 'workflow.start');
+        $this->connect($label, 'workflow.finish');
     }
 
     public function createToken(array $data = array())

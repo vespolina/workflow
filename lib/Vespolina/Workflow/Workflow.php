@@ -9,8 +9,11 @@
 
 namespace Vespolina\Workflow;
 
+use Doctrine\Common\Inflector\Inflector;
 use Psr\Log\LoggerInterface;
+use Vespolina\Workflow\TokenInterface;
 use Vespolina\Workflow\TransactionInterface;
+use Vespolina\Workflow\Queue\QueueHandlerInterface;
 
 class Workflow
 {
@@ -18,11 +21,14 @@ class Workflow
     protected $errors;
     protected $logger;
     protected $nodes;
+    protected $queueHandler;
     protected $tokens;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, QueueHandlerInterface $queueHandler = null)
     {
         $this->logger = $logger;
+        $this->queueHandler = $queueHandler;
+
         $this->start = new Place();
         $this->addNode($this->start, 'workflow.start');
         $this->finish = new Place();
@@ -165,6 +171,22 @@ class Workflow
     public function getErrors()
     {
         return $this->errors;
+    }
+
+    public function consumeQueue(TokenInterface $token)
+    {
+        $location = $token->getLocation();
+        $node = $this->nodes[$location];
+
+        $message = 'Token is consumed in ' . $location;
+        $this->logger->info($message, array('token' => $token));
+
+        return $node->consume($token);
+    }
+
+    public function produceQueue(TokenInterface $token)
+    {
+        return $this->queueHandler->enqueue($token->getLocation(), $token);
     }
 
     public function addToken(TokenInterface $token)

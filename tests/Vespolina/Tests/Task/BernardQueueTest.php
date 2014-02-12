@@ -9,11 +9,18 @@ use Bernard\Middleware\MiddlewareBuilder;
 use Bernard\Producer;
 use Bernard\QueueFactory\InMemoryFactory;
 use Bernard\Router\SimpleRouter;
+use Monolog\Handler\TestHandler;
 use Monolog\Logger;
+use Vespolina\Tests\WorkflowCommon;
+use Vespolina\Workflow\Queue\BernardQueueHandler;
+use Vespolina\Workflow\Queue\BernardReceiver;
 use Vespolina\Workflow\Token;
 
 class BernardQueueTest extends \PHPUnit_Framework_TestCase
 {
+    protected $producer;
+    protected $queues;
+
     public function setUp()
     {
         $this->queues = new InMemoryFactory;
@@ -22,36 +29,42 @@ class BernardQueueTest extends \PHPUnit_Framework_TestCase
 
     public function testExecuteAndConsume()
     {
-        $task = $this->getMock('Vespolina\Workflow\Task\BernardQueue', ['getQueueName', 'testQueue'], [$this->producer]);
-        $task->expects($this->any())
-            ->method('getQueueName')
-            ->will($this->returnValue('TestQueue'));
-        $task->expects($this->once())
-            ->method('testQueue')
-            ->will($this->returnValue(true));
+        $logger = new Logger('test');
+        $handler = new TestHandler();
+        $logger->pushHandler($handler);
 
-        $rp = new \ReflectionProperty($task, 'logger');
-        $rp->setAccessible(true);
-        $rp->setValue($task, new Logger('test'));
-        $rp->setAccessible(false);
+        $queueHandler = new BernardQueueHandler($this->producer);
+
+        $workflow = WorkflowCommon::createWorkflow($logger, $queueHandler);
 
         $token = new Token();
+        $token->setLocation('queue_test');
         $token->setData('label', 'test');
         $token->setData('array', ['a' => 'b']);
         $token->setData('object', new TestObject());
 
+        $task = $this->getMock('Vespolina\Workflow\Task\Queue', ['consume']);
+        $task->expects($this->once())
+            ->method('consume')
+            ->with($token)
+            ->will($this->returnValue(true));
+
+        $task->setWorkflow($workflow, $logger);
+        $workflow->addNode($task, 'queue_test');
+
         $this->assertTrue($task->accept($token), 'true should be returned when the token is pushed into the queue');
 
-        $envelope = $this->queues->create('TestQueue')->dequeue();
+        $envelope = $this->queues->create('queue_test')->dequeue();
         $message = $envelope->getMessage();
         $this->assertEquals($token, $message->getToken());
-        $this->queues->create('TestQueue')->enqueue($envelope);
+        $this->queues->create('queue_test')->enqueue($envelope);
 
-        $this->router = new SimpleRouter(['TestQueue' => $task]);
+        $receiver = new BernardReceiver($workflow);
+        $this->router = new SimpleRouter(['queue_test' => $receiver]);
         $this->middleware = new MiddlewareBuilder();
         $this->consumer = new Consumer($this->router, $this->middleware);
 
-        $this->consumer->consume($this->queues->create('TestQueue'), ['max-runtime' => 1]);
+        $this->consumer->consume($this->queues->create('queue_test'), ['max-runtime' => 1]);
     }
 }
 

@@ -24,7 +24,7 @@ abstract class Queue extends Transaction
         $success = true;
         try {
             $success = $success && $this->preExecute($token);
-            $success = $success && $this->execute($token);
+            $success = $success && $this->workflow->produceQueue($token);
         } catch (\Exception $e) {
             if ($e instanceof ProcessingFailureException) {
                 $this->workflow->addError($e->getMessage());
@@ -36,18 +36,11 @@ abstract class Queue extends Transaction
         return $success;
     }
 
-    public function getQueueName()
+    public function consume(TokenInterface $token)
     {
-        throw new \Exception('The execute method needs to be implement in your class');
-    }
-
-    protected function postConsume(TokenInterface $token)
-    {
-        $message = 'Token continues post Consume in ' . $this->getName();
-        $this->logger->info($message, array('token' => $token));
-
         $success = true;
         try {
+            $success = $success && $this->execute($token);
             $success = $success && $this->postExecute($token);
             $success = $success && $this->cleanUp($token);
         } catch (\Exception $e) {
@@ -57,6 +50,7 @@ abstract class Queue extends Transaction
 
             return false;
         }
+        $this->finalize($token);
 
         return $success;
     }

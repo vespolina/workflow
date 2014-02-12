@@ -43,12 +43,12 @@ class WorkflowCommon
         return new Token();
     }
 
-    public static function createWorkflow($logger = null)
+    public static function createWorkflow($logger = null, $queueHandler = null)
     {
         if (!$logger) {
             $logger = new Logger('test');
         }
 
-        return new Workflow($logger);
+        return new Workflow($logger, $queueHandler);
     }
 } 

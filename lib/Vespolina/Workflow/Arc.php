@@ -14,32 +14,13 @@ class Arc
     public $from;
     public $to;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function accept(TokenInterface $token)
-    {
-        try {
-            return $this->to->accept($token);
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
 
     /**
      * {@inheritdoc}
      */
-    public function setFrom(array $from)
+    public function setFrom($from)
     {
-        $this->from = $from['label'];
-        $node = $from['node'];
-        if (isset($this->to)) {
-            $expectedInterface = $this->getExpectedInterface($this->to);
-            if (!$node instanceof $expectedInterface) {
-                throw new \InvalidArgumentException('The "from" node should be an instance of ' . $expectedInterface);
-            }
-        }
-        $node->addOutput($this);
+        $this->from = $from;
     }
 
     /**
@@ -57,15 +38,7 @@ class Arc
      */
     public function setTo(array $to)
     {
-        $this->to = $to['label'];
-        $node = $to['node'];
-        if (isset($this->from)) {
-            $expectedInterface = $this->getExpectedInterface($this->from);
-            if (!$tokenable instanceof $expectedInterface) {
-                throw new \InvalidArgumentException('The "to" node should be an instance of ' . $expectedInterface);
-            }
-        }
-        $tokenable->addInput($this);
+        $this->to = $to;
     }
 
     /**
@@ -76,14 +49,5 @@ class Arc
     public function getTo()
     {
         return $this->to;
-    }
-
-    protected function getExpectedInterface(NodeInterface $tokenable)
-    {
-        if ($tokenable instanceof TransactionInterface) {
-            return 'Vespolina\Workflow\PlaceInterface';
-        }
-
-        return 'Vespolina\Workflow\TransactionInterface';
     }
 }

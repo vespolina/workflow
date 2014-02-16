@@ -20,5 +20,8 @@ class TokenTest extends \PHPUnit_Framework_TestCase
         $reaction = 'Yeah, bitch! Magnets! Oh!';
         $token->setData('laptop', $reaction);
         $this->assertSame($reaction, $token->getData('laptop'), 'the set data should be returned');
+        $token->unsetData('laptop');
+        $this->assertNull($token->getData('laptop'), 'there should be no data now');
+        $token->unsetData('missing', 'there should be no problem with unsetting missing data');
     }
 }

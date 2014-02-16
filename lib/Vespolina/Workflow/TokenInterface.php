@@ -21,12 +21,20 @@ interface TokenInterface
     function setData($key, $data);
 
     /**
-     * Return the data
+     * Return a single data item by key or all of the data
      *
      * @param $key
      * @return mixed
      */
-    function getData($key);
+    function getData($key = null);
+
+    /**
+     * Unset the data
+     *
+     * @param $key
+     * @return $this
+     */
+    function unsetData($key);
 
     /**
      * Set the location

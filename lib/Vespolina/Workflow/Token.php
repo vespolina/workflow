@@ -29,18 +29,29 @@ class Token implements TokenInterface
     }
 
     /**
-     * Return the data
-     *
-     * @param $key
-     * @return mixed
+     * {@inheritdoc}
      */
-    public function getData($key)
+    public function getData($key = null)
     {
+        if ($key === null) {
+            return $this->data;
+        }
+
         if (!isset($this->data[$key])) {
             return null;
         }
 
         return $this->data[$key];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function unsetData($key)
+    {
+        unset($this->data[$key]);
+
+        return $this;
     }
 
     /**

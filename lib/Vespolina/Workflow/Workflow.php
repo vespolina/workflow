@@ -180,7 +180,8 @@ class Workflow
 
         $message = 'Token is consumed in ' . $location;
         $this->logger->info($message, array('token' => $token));
-
+        $node->setWorkflow($this, $this->logger);
+        
         return $node->consume($token);
     }
 

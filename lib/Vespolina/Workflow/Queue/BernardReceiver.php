@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Vespolina\Workflow\Queue;
-
 
 use Vespolina\Workflow\Workflow;
 

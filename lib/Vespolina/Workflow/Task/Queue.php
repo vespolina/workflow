@@ -54,9 +54,4 @@ abstract class Queue extends Transaction
 
         return $success;
     }
-
-    protected function restoreWorkflow(TokenInterface $token)
-    {
-        $location = $token->getLocation();
-    }
 }

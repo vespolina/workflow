@@ -16,11 +16,17 @@ class BernardTokenMessage extends AbstractMessage
         $this->name = preg_replace('/(^([0-9]+))|([^[:alnum:]-_+])/i', '', $name);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getName()
     {
         return $this->name;
     }
 
+    /**
+     * @return array
+     */
     public function getToken()
     {
         return $this->token;

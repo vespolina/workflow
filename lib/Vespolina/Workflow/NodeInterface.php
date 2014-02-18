@@ -61,7 +61,7 @@ interface NodeInterface
     /**
      * Return the tokens
      *
-     * @return \Vespolina\Workflow\TokenInterface[]
+     * @return TokenInterface[]
      */
     function getTokens();
 

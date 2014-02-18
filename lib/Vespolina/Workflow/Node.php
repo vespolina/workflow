@@ -86,7 +86,7 @@ class Node implements NodeInterface
      */
     public function execute(TokenInterface $token)
     {
-        throw new \Exception('The execute method needs to be implement in your class');
+        throw new \Exception('The execute method needs to be implemented in your class');
     }
 
     /**
@@ -146,21 +146,37 @@ class Node implements NodeInterface
         }
     }
 
+    /**
+     * @param TokenInterface $token
+     * @return boolean
+     */
     protected function cleanUp(TokenInterface $token)
     {
         return true;
     }
 
+    /**
+     * @param TokenInterface $token
+     * @return boolean
+     */
     protected function postExecute(TokenInterface $token)
     {
         return true;
     }
 
+    /**
+     * @param TokenInterface $token
+     * @return boolean
+     */
     protected function preExecute(TokenInterface $token)
     {
         return true;
     }
 
+    /**
+     * @param TokenInterface $token
+     * @return boolean
+     */
     protected function finalize(TokenInterface $token)
     {
         return $this->workflow->finalize($this, $token);

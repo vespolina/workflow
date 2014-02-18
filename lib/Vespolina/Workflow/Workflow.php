@@ -23,6 +23,8 @@ class Workflow
     protected $nodes;
     protected $queueHandler;
     protected $tokens;
+    protected $start;
+    protected $finish;
 
     public function __construct(LoggerInterface $logger, QueueHandlerInterface $queueHandler = null)
     {

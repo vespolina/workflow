@@ -3,8 +3,6 @@
 namespace Vespolina\Tests\Task;
 
 use Bernard\Consumer;
-use Bernard\Middleware\ErrorLogFactory;
-use Bernard\Middleware\FailuresFactory;
 use Bernard\Middleware\MiddlewareBuilder;
 use Bernard\Producer;
 use Bernard\QueueFactory\InMemoryFactory;

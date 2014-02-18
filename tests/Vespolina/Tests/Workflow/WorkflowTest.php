@@ -148,6 +148,44 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($arc, array_shift($transactionInputs), 'the input should be the new arc');
     }
 
+    public function testConnectToStart()
+    {
+        $workflow = WorkflowCommon::createWorkflow();
+        $transaction = WorkflowCommon::createTransaction();
+        $workflow->addNode($transaction, 't1');
+        $workflow->connectToStart('t1');
+        $arcs = $workflow->getArcs();
+        $this->assertCount(1, $arcs, 'there should only be one arc');
+        $arc = array_shift($arcs);
+        $this->assertSame('workflow.start', $arc->from, 'workflow.start should be set as the from in the arc');
+        $this->assertSame('t1', $arc->to, 'the transaction should be set as the to in the arc');
+        $placeOutputs = $workflow->getNodes()['workflow.start']->getOutputs();
+        $this->assertCount(1, $placeOutputs, 'the place should only have one output');
+        $this->assertSame($arc, array_shift($placeOutputs), 'the output should be the new arc');
+        $transactionInputs = $transaction->getInputs();
+        $this->assertCount(1, $transactionInputs, 'the transaction should only have one input');
+        $this->assertSame($arc, array_shift($transactionInputs), 'the input should be the new arc');
+    }
+
+    public function testConnectToFinish()
+    {
+        $workflow = WorkflowCommon::createWorkflow();
+        $transaction = WorkflowCommon::createTransaction();
+        $workflow->addNode($transaction, 't1');
+        $workflow->connectToFinish('t1');
+        $arcs = $workflow->getArcs();
+        $this->assertCount(1, $arcs, 'there should only be one arc');
+        $arc = array_shift($arcs);
+        $this->assertSame('workflow.finish', $arc->to, 'workflow.start should be set as the from in the arc');
+        $this->assertSame('t1', $arc->from, 'the transaction should be set as the to in the arc');
+        $placeInputs = $workflow->getNodes()['workflow.finish']->getInputs();
+        $this->assertCount(1, $placeInputs, 'the place should only have one input');
+        $this->assertSame($arc, array_shift($placeInputs), 'the input should be the new arc');
+        $transactionOutputs = $transaction->getOutputs();
+        $this->assertCount(1, $transactionOutputs, 'the transaction should only have one output');
+        $this->assertSame($arc, array_shift($transactionOutputs), 'the output should be the new arc');
+    }
+
     public function testConnectThroughPlace()
     {
         $workflow = WorkflowCommon::createWorkflow();

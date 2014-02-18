@@ -234,7 +234,8 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
 
     public function testFinalizeSingleArc()
     {
-        $logger = new Logger('test');
+        $handler = new TestHandler();
+        $logger = new Logger('test', array($handler));
         $workflow = WorkflowCommon::createWorkflow($logger);
         $tokenable = new ExtendedTransaction();
         $tokenable->setWorkflow($workflow, $logger);
@@ -253,7 +254,8 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
 
     public function testFinalizeMultipleArcs()
     {
-        $logger = new Logger('test');
+        $handler = new TestHandler();
+        $logger = new Logger('test', array($handler));
         $workflow = WorkflowCommon::createWorkflow($logger);
         $transaction = new ExtendedTransaction();
         $workflow->addNode($transaction, 'transaction');

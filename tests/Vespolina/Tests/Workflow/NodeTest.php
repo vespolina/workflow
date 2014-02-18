@@ -21,7 +21,11 @@ class NodeTest extends \PHPUnit_Framework_TestCase
     public function testName()
     {
         $node = new TestNode();
-        $this->assertSame('Vespolina\Tests\Workflow\TestNode', $node->getName(), 'a missing name should return the class name');
+        $this->assertSame(
+            'Vespolina\Tests\Workflow\TestNode',
+            $node->getName(),
+            'a missing name should return the class name'
+        );
 
         $node->setName('test node');
         $this->assertSame('test node', $node->getName(), 'the set name should be returned');
@@ -42,7 +46,8 @@ class NodeTest extends \PHPUnit_Framework_TestCase
         $logger = new Logger('test', array($handler));
         $workflow = WorkflowCommon::createWorkflow($logger);
         $token = WorkflowCommon::createToken();
-        $tokenable = $this->getMock('Vespolina\Workflow\Node',
+        $tokenable = $this->getMock(
+            'Vespolina\Workflow\Node',
             array('preExecute', 'execute', 'postExecute', 'cleanUp', 'finalize')
         );
 
@@ -72,7 +77,8 @@ class NodeTest extends \PHPUnit_Framework_TestCase
         $logger = new Logger('test', array($handler));
         $workflow = WorkflowCommon::createWorkflow($logger);
         $token = WorkflowCommon::createToken();
-        $tokenable = $this->getMock('Vespolina\Workflow\Node',
+        $tokenable = $this->getMock(
+            'Vespolina\Workflow\Node',
             array('preExecute')
         );
         $tokenable->setWorkflow($workflow, $logger);
@@ -82,7 +88,11 @@ class NodeTest extends \PHPUnit_Framework_TestCase
             ->will($this->throwException(new ProcessingFailureException('testing')))
         ;
         $this->assertFalse($tokenable->accept($token), 'a failure should return false');
-        $this->assertContains('testing', $workflow->getErrors(), 'the error message from the failure should be in workflow');
+        $this->assertContains(
+            'testing',
+            $workflow->getErrors(),
+            'the error message from the failure should be in workflow'
+        );
     }
 
     public function testAddInput()

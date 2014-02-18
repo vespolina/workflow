@@ -32,15 +32,24 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
     {
         $workflow = WorkflowCommon::createWorkflow();
         $nodes = $workflow->getNodes();
-        $this->assertInstanceOf('Vespolina\Workflow\Place', $nodes['workflow.start'], 'a place with the location workflow.start should have been created');
-        $this->assertInstanceOf('Vespolina\Workflow\Place', $nodes['workflow.finish'], 'a place with the location workflow.finish should have been created');
+        $this->assertInstanceOf(
+            'Vespolina\Workflow\Place',
+            $nodes['workflow.start'],
+            'a place with the location workflow.start should have been created'
+        );
+        $this->assertInstanceOf(
+            'Vespolina\Workflow\Place',
+            $nodes['workflow.finish'],
+            'a place with the location workflow.finish should have been created'
+        );
     }
 
     public function testAccept()
     {
         $logger = $this->getMock('Monolog\Logger', array('info'), array('test'));
         $logger->expects($this->exactly(2))
-            ->method('info');
+            ->method('info')
+        ;
         $workflow = WorkflowCommon::createWorkflow($logger);
         $input = $this->getMock('Vespolina\Workflow\Place', array('accept'));
         $input->expects($this->once())
@@ -101,7 +110,8 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException     \InvalidArgumentException
-     * @expectedExceptionMessage You can only connect a Vespolina\Workflow\TransactionInterface to a Vespolina\Workflow\PlaceInterface
+     * @expectedExceptionMessage You can only connect a Vespolina\Workflow\TransactionInterface
+     *                           to a Vespolina\Workflow\PlaceInterface
      */
     public function testConnectTwoPlaceNodes()
     {
@@ -115,7 +125,8 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException     \InvalidArgumentException
-     * @expectedExceptionMessage You can only connect a Vespolina\Workflow\PlaceInterface to a Vespolina\Workflow\TransactionInterface
+     * @expectedExceptionMessage You can only connect a Vespolina\Workflow\PlaceInterface
+     *                           to a Vespolina\Workflow\TransactionInterface
      */
     public function testConnectTwoTransactionPlaceNodes()
     {
@@ -195,7 +206,11 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $workflow->addNode($trans2, 'trans2');
 
         $place = $workflow->connectThroughPlace('trans1', 'trans2');
-        $this->assertInstanceOf('Vespolina\Workflow\PlaceInterface', $place, 'a place should have been created and returned');
+        $this->assertInstanceOf(
+            'Vespolina\Workflow\PlaceInterface',
+            $place,
+            'a place should have been created and returned'
+        );
         $nodes = $workflow->getNodes();
         $this->assertSame($place, $nodes['place_post_trans1'], 'the place should have been added to the nodes');
         $arcs = $workflow->getArcs();
@@ -219,7 +234,11 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
     public function testCreateToken()
     {
         $workflow = WorkflowCommon::createWorkflow();
-        $this->assertInstanceof('Vespolina\Workflow\TokenInterface', $workflow->createToken(), 'an instance of TokenInterface should be create');
+        $this->assertInstanceof(
+            'Vespolina\Workflow\TokenInterface',
+            $workflow->createToken(),
+            'an instance of TokenInterface should be create'
+        );
 
         $string = 'string';
         $object = new \stdClass();
@@ -283,7 +302,11 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(2, $workflow->getTokens());
         foreach ($workflow->getTokens() as $workflowToken) {
             $this->assertNotSame($token, $workflowToken, 'the tokens should be clones');
-            $this->assertContains($workflowToken, $outputTokens, 'the workflow tokens should also be the same token in the arc "to"');
+            $this->assertContains(
+                $workflowToken,
+                $outputTokens,
+                'the workflow tokens should also be the same token in the arc "to"'
+            );
         }
     }
 

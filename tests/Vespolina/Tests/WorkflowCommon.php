@@ -51,4 +51,4 @@ class WorkflowCommon
 
         return new Workflow($logger, $queueHandler);
     }
-} 
+}

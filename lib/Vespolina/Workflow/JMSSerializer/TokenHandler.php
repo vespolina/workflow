@@ -94,7 +94,7 @@ class TokenHandler implements SubscribingHandlerInterface
                     $argsData[$arrayKey] = $context->accept($arrayData['args'], $arrayData['type']);
                 }
             } else {
-                $argsData = $context->accept($datum, $type);
+                $argsData = $context->accept($datum['args'], $type);
             }
             $token->setData($datum['key'], $argsData);
         }

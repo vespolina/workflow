@@ -14,38 +14,21 @@ class Arc
     public $from;
     public $to;
 
-
-    /**
-     * {@inheritdoc}
-     */
     public function setFrom($from)
     {
         $this->from = $from;
     }
 
-    /**
-     * Return the from
-     *
-     * @return mixed
-     */
     public function getFrom()
     {
         return $this->from;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setTo(array $to)
     {
         $this->to = $to;
     }
 
-    /**
-     * Return the to
-     *
-     * @return mixed
-     */
     public function getTo()
     {
         return $this->to;

@@ -28,8 +28,7 @@
     },
     "autoload": {
         "psr-0": {
-            "Vespolina": "lib/",
-            "Vespolina\\Tests": "tests/"
+            "Vespolina": "lib/"
         }
     }
 }

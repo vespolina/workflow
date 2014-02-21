@@ -20,10 +20,14 @@ class Workflow
     protected $arcs;
     protected $errors;
     protected $logger;
+    /** @var $nodes NodeInterface[] */
     protected $nodes;
     protected $queueHandler;
+    /** @var $tokens TokenInterface[] */
     protected $tokens;
+    /** @var $start PlaceInterface */
     protected $start;
+    /** @var $finish PlaceInterface */
     protected $finish;
 
     public function __construct(LoggerInterface $logger, QueueHandlerInterface $queueHandler = null)
@@ -160,6 +164,9 @@ class Workflow
         $this->nodes[$label] = $node;
     }
 
+    /**
+     * @return NodeInterface[]
+     */
     public function getNodes()
     {
         return $this->nodes;
@@ -192,6 +199,9 @@ class Workflow
         return $this->queueHandler->enqueue($token->getLocation(), $token);
     }
 
+    /**
+     * @param TokenInterface $token
+     */
     public function addToken(TokenInterface $token)
     {
         $this->tokens[] = $token;
@@ -200,7 +210,7 @@ class Workflow
     /**
      * Return the tokens
      *
-     * @return array of \Vespolina\Workflow\TokenInterface
+     * @return TokenInterface[]
      */
     public function getTokens()
     {
@@ -210,7 +220,7 @@ class Workflow
     /**
      * Remove a token from the collection of tokens
      *
-     * @param TokenInterface $token
+     * @param boolean
      */
     public function removeToken(TokenInterface $token)
     {
@@ -218,11 +228,16 @@ class Workflow
             if ($token === $curToken) {
                 unset($this->tokens[$key]);
 
-                return;
+                return true;
             }
         }
+
+        return false;
     }
 
+    /**
+     * @return boolean
+     */
     public function validateWorkflow()
     {
         $this->currentValidationStep('reset');
@@ -232,6 +247,10 @@ class Workflow
         return $success;
     }
 
+    /**
+     * @param NodeInterface $node
+     * @return boolean
+     */
     public function traverseNext(NodeInterface $node)
     {
         $this->logger->info(sprintf('Node %s reached, step %s', $node->getName(), $this->currentValidationStep()), array('node' => $node));
@@ -259,6 +278,10 @@ class Workflow
         return $success;
     }
 
+    /**
+     * @param string $reset
+     * @return mixed
+     */
     protected function currentValidationStep($reset = '')
     {
         static $step;

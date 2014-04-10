@@ -3,6 +3,7 @@
 namespace Vespolina\Workflow\Queue;
 
 use Bernard\Producer;
+use Bernard\Message\DefaultMessage;
 use Vespolina\Workflow\Message\BernardTokenMessage;
 
 class BernardQueueHandler implements QueueHandlerInterface

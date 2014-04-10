@@ -14,6 +14,12 @@ class Token implements TokenInterface
     protected $data;
     protected $location;
 
+    public function __construct($data = [], $location = null)
+    {
+        $this->data = $data;
+        $this->location = $location;
+    }
+
     /**
      * {@inheritdoc}
      */

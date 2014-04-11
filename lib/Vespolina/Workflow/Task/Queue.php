@@ -38,6 +38,8 @@ abstract class Queue extends Transaction
 
     public function consume(TokenInterface $token)
     {
+        $this->tokens[] = $token;
+
         $success = true;
         try {
             $success = $success && $this->execute($token);

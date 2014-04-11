@@ -186,6 +186,7 @@ class Workflow
     {
         $location = $token->getLocation();
         $node = $this->nodes[$location];
+        $this->addToken($token);
 
         $message = 'Token is consumed in ' . $location;
         $this->logger->info($message, array('token' => $token));

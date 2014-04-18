@@ -24,13 +24,12 @@ class TypeNormalizer extends AggregateNormalizer implements AggregateNormalizerA
 
     public function supportsNormalization($data, $format = null)
     {
-        return false;
         return is_scalar($data) || is_array($data);
     }
 
     public function supportsDenormalization($data, $type, $format = null)
     {
-  return false;      return (is_scalar($data) || is_array($data)) && !class_exists($type);
+        return (is_scalar($data) || is_array($data)) && !class_exists($type);
     }
 
     private function normalizeValue($data)

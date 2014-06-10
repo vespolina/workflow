@@ -9,7 +9,6 @@
 
 namespace Vespolina\Workflow;
 
-use Doctrine\Common\Inflector\Inflector;
 use Psr\Log\LoggerInterface;
 use Vespolina\Workflow\TokenInterface;
 use Vespolina\Workflow\TransactionInterface;

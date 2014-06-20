@@ -220,7 +220,8 @@ class Workflow
     /**
      * Remove a token from the collection of tokens
      *
-     * @param boolean
+     * @param $token
+     * @return bool
      */
     public function removeToken(TokenInterface $token)
     {
@@ -305,5 +306,10 @@ class Workflow
         $node->setWorkflow($this, $this->logger);
 
         return $node->accept($token);
+    }
+
+    public function getLogger()
+    {
+        return $this->logger;
     }
 }

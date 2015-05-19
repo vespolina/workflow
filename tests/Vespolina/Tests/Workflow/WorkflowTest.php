@@ -82,6 +82,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
 
         $workflow->removeToken($token2);
 
+        $this->assertFalse($workflow->removeToken($token2));
         $this->assertContains($token, $workflow->getTokens());
         $this->assertNotContains($token2, $workflow->getTokens());
     }

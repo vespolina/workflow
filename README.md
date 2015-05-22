@@ -44,20 +44,52 @@ use Vespolina\Workflow\Task\Automatic;
 use Vespolina\Workflow\Place;
 use Vespolina\Workflow\Workflow;
 use Vespolina\Workflow\Token;
+use Vespolina\Workflow\TokenInterface;
 use Monolog\Logger;
+
+class NodeA extends Automatic
+{
+    public function execute(TokenInterface $token)
+    {
+        if ($token->getData('autoB')) {
+            return false;
+        }
+        $token->setData('autoA', true);
+
+        return true;
+    }
+}
+
+class NodeB extends Automatic
+{
+    public function execute(TokenInterface $token)
+    {
+        if (!$token->getData('autoA')) {
+            return false;
+        }
+        $token->setData('autoB', true);
+
+        return true;
+    }
+}
 
 $logger = new Logger('test');
 $workflow = new Workflow($logger);
 
 // create sequence
-$a = new Automatic();
-$b = new Automatic();
-$p = new Place();
+$a = new NodeA();
+$b = new NodeB();
+$place = new Place();
+$place->setWorkflow($workflow, $logger);
 
-$workflow->connect($workflow->getStart(), $a);
-$workflow->connect($a, $p);
-$workflow->connect($p, $b);
-$workflow->connect($b, $workflow->getFinish());
+$workflow->addNode($a, 'a');
+$workflow->addNode($place, 'p1');
+$workflow->addNode($b, 'b');
+
+$workflow->connectToStart('a');
+$workflow->connect('a', 'p1');
+$workflow->connect('p1', 'b');
+$workflow->connectToFinish('b');
 
 $workflow->accept(new Token());
 ```
@@ -65,10 +97,10 @@ $workflow->accept(new Token());
 And we will see the traversing in our logs:
 
 ```cli
-... test.INFO: Token accepted into workflow
-... test.INFO: Token advanced into workflow.start
-... test.INFO: Token advanced into Vespolina\Workflow\Task\Automatic
-... test.INFO: Token advanced into Vespolina\Workflow\Place
-... test.INFO: Token advanced into Vespolina\Workflow\Task\Automatic
-... test.INFO: Token advanced into workflow.finish
+... test.INFO: Token accepted into workflow {"token":"[object] (Vespolina\\Workflow\\Token: {})"} []
+... test.INFO: Token advanced into workflow.start {"token":"[object] (Vespolina\\Workflow\\Token: {})"} []
+... test.INFO: Token advanced into a {"token":"[object] (Vespolina\\Workflow\\Token: {})"} []
+... test.INFO: Token advanced into p1 {"token":"[object] (Vespolina\\Workflow\\Token: {})"} []
+... test.INFO: Token advanced into b {"token":"[object] (Vespolina\\Workflow\\Token: {})"} []
+... test.INFO: Token advanced into workflow.finish {"token":"[object] (Vespolina\\Workflow\\Token: {})"} []
 ```

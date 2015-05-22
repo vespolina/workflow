@@ -26,7 +26,7 @@ class WorkflowCommon
     public static function createPlace($workflow = null, $logger = null)
     {
         $place = new Place();
-        if ($workflow) {
+        if ($workflow && $logger) {
             $place->setWorkflow($workflow, $logger);
         }
 

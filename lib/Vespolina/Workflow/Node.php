@@ -144,6 +144,8 @@ class Node implements NodeInterface
                 return true;
             }
         }
+
+        return false;
     }
 
     /**
